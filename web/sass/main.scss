@@ -1,0 +1,154 @@
+@import "compass/css3";
+@import "compass/utilities";
+
+// ========= Globals =========================================
+
+$ckbk-colour-background: #EFEACC;
+$ckbk-colour-foreground: #A23607;
+$ckbk-colour-darkest: #4E2008;
+$ckbk-colour-light: #7A6A46;
+$ckbk-colour-darker: #4B4934;
+
+* {
+	@include box-sizing(border-box);
+	margin: 0;
+	padding: 0;
+}
+
+ul {
+	list-style: none;
+}
+
+html,
+body {
+	color: #FFFFFF;
+	font-family: "Whitney SSm A", "Whitney SSm B", "ff-meta-web-pro", sans-serif;
+	height: 100%;
+	margin: 0;
+	min-height: 100%;
+	min-width: 0;
+	overflow-x: hidden; // Learn details
+	overflow-y: auto; // Learn details
+}
+
+html {
+	background: none repeat scroll 0 0 #2F2F2F;
+}
+
+// ========= General =========================================
+
+.ckbk-main-header {
+	background: none repeat scroll 0 0 #212121;
+	border-bottom: 1px solid #3D3D3D;
+	height: 65px;
+	position: relative;
+
+	.ckbk-logo {
+		background: linear-gradient(#3D3D3E, #2A2A2A) repeat scroll 0 0 transparent; // Learn details
+		border-bottom: 1px solid #000000;
+		display: inline-block;
+		font-size: 36px;
+		padding: 10px 16px;
+		position: relative;
+		text-transform: uppercase;
+
+	}
+}
+
+.ckbk-main-section {
+	@include box-shadow(0 0 10px 0px #000000);
+	height: 100%;
+	position: relative;
+}
+
+.ckbk-heading {
+	font-weight: bold;
+}
+
+// ========= Catalog =========================================
+
+.ckbk-left-section {
+	padding: 15px;
+
+	.ckbk-catalog-container {
+		background: none repeat scroll 0 0 rgba(0, 0, 0, 0.3);
+		@include border-radius(15px);
+		@include box-shadow(0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 5px 0 rgba(0, 0, 0, 0.8) inset);
+		padding: 14px 18px;
+
+		.ckbk-heading {
+			font-size: 18px;
+		}
+
+		.ckbk-category {
+			background-color: #000000;
+			font-size: 14px;
+			margin-top: 5px;
+
+			.ckbk-category-label {
+				color: #FFFFFF;
+				display: block;
+				padding: 5px;
+				text-decoration: none;
+			}
+
+			.ckbk-category-recipes {
+				padding-left: 5px;
+				background-color: #2F2F2F;
+			}
+
+			.ckbk-category-hidden {
+				display: none;
+			}
+		}
+	}
+}
+
+// ========= Recipe =========================================
+
+.ckbk-right-section {
+	height: 100%;
+	padding: 15px;
+
+	.ckbk-heading {
+		font-size: 24px;
+		margin-top: 20px;
+		margin-bottom: 35px;;
+		text-align: center;
+	}
+
+	.ckbk-recipe-container {
+		background: none repeat scroll 0 0 rgba(0, 0, 0, 0.2);
+		@include box-shadow(0 0 0 1px rgba(0, 0, 0, 0.2) inset);
+		display: inline-block;
+		height: 100%;
+		padding: 10px;
+		width: 100%;
+
+		.ckbk-recipe-ingredients-container {
+			background: none repeat scroll 0 0 rgba(0, 0, 0, 0.3);
+			@include border-radius(15px);
+			@include box-shadow(0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 5px 0 rgba(0, 0, 0, 0.8) inset);
+			padding: 14px 18px;
+
+			.ckbk-heading {
+				font-size: 18px;
+				margin-bottom: 20px;
+			}
+
+			.ckbk-recipe-ingredients {
+
+				li:first-child {
+					border-top: none;
+				}
+
+				li {
+					border-top: 1px dashed white;
+					margin-top: 6px;
+					padding-bottom: 6px;
+				}
+
+			}
+		}
+	}
+}
