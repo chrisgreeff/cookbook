@@ -28,21 +28,20 @@ h2 {
 }
 
 .cb-card {
-    font-family: 'Roboto', sans-serif; font-weight:300;
+    font-family: 'Roboto', sans-serif;
+    font-weight:300;
     margin-top: 20px;
     margin-right: 40px;
     margin-left: 40px;
     padding: 30px;
     background-color: #ffffff;
-
+    
+    &:focus {
+        outline-style: solid;
+        outline-width: 2px;
+        outline-color: #F92770;
+    }
 }
-
-.cb-card:focus {
-    outline-style:solid;
-    outline-width:2px;
-    outline-color:#F92770;
-}
-
 
 /* KELSON SANS REGULAR FONTS */
 
@@ -55,5 +54,4 @@ h2 {
          url('kelson_sans_regular-webfont.svg#kelson_sansregular') format('svg');
     font-weight: normal;
     font-style: normal;
-
 }
