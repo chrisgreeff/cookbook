@@ -1,6 +1,7 @@
 #cookbook {
-    max-height: 2500px;
-    height: 500px;
+    font-family: 'Roboto', sans-serif; compfont-weight:300;
+    max-height: 100%;
+    height: auto;
     background-color: white;
     border-collapse: separate; 
     border: 1px solid rgb(204, 204, 204); 
@@ -12,4 +13,5 @@
     border-bottom-left-radius: 3px; border-top-left-radius: 3px;
     overflow: scroll;
     outline: none;
+
 }
