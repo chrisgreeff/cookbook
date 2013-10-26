@@ -1,16 +1,32 @@
 #header {
-    font-family: 'Roboto', sans-serif; compfont-weight:300;
     color:#ebebeb;
     background-color: #272822;
     width:100%;
-    margin:0em;
+    margin:0;
+    height:40px;
+    position:fixed;
+    z-index:1000;
+    text-transform: uppercase;
 }
 
 #body {
-    margin:0;
+    margin-top:40px;
     padding:0;
+    position:absolute;
 }
 
 h2 {
-    margin:0;
+    margin-left:20px;
+    margin-top:3px;
+    margin-bottom:0;
+    font-family: 'Roboto', sans-serif; font-weight:700;font-size:30px;
+}
+
+.cb-card {
+    font-family: 'Roboto', sans-serif; font-weight:300;
+    margin-top:30px;
+    padding:30px;
+    border-style:solid;
+    border-color:#bebebe;
+    border-width:1px;
 }
