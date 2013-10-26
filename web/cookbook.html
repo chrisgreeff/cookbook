@@ -7,31 +7,13 @@
         <!-- Imports -->
         <link href="css/main.css" rel="stylesheet" type="text/css" media="all">
         <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,500,700' rel='stylesheet' type='text/css'>
-        <script src="vendors/jquery-1.10.2.min.js"></script>
-        <script src="vendors/bootstrap.min.js"></script>
-        <script src="vendors/jquery.hotkeys.js"></script>
-        <script src="vendors/bootstrap-wysiwyg.js"></script>
+        <script src="js/vendors/jquery-1.10.2.min.js"></script>
+        <script src="js/vendors/bootstrap.min.js"></script>
+        <script src="js/vendors/jquery.hotkeys.js"></script>
+        <script src="js/vendors/bootstrap-wysiwyg.js"></script>
     </head>
     <body>
         <div id="cookbook"></div>
-        <script>
-            var cookbookNode = $('#cookbook');
-            cookbookNode.wysiwyg();
-
-            cookbookNode.on('keydown', function (event) {
-                if (event.keyCode === 13) {
-                    if (event.shiftKey) {
-                        event.preventDefault();
-                        document.execCommand('insertUnorderedList');
-                        document.execCommand('insertText', false, '\n\n');
-                    } else if (event.ctrlKey || event.metaKey) {
-                        event.preventDefault();
-                        document.execCommand('insertUnorderedList');
-                        document.execCommand('insertHTML', false, '<input type="checkbox"/>');
-                        document.execCommand('insertText', false, '\n\n');
-                    }
-                }
-            });
-        </script>
+        <script src="js/cookbook.js"></script>
     </body>
 </html>
