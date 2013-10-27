@@ -4,7 +4,7 @@ YUI.add('cb-card', function (Y) {
 
     Y.namespace('CB').Card = Y.Base.create('cb-card', Y.Model, [], {}, {
         ATTRS: {
-            mode: {}
+            content: {}
         }
     });
 
