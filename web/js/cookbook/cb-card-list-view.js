@@ -15,7 +15,7 @@ YUI.add('cb-card-list-view', function (Y) {
         '<li class="' + CLASS_NAMES.card + '">New Note</li>' +
         '<% Y.Array.each(this.cards, function(card) { %>' +
             '<li class="' + CLASS_NAMES.card + '" data-id="<%= card.id %>">' +
-                '<%= card.content %>' +
+                '<%== card.content %>' +
             '</li>' +
         '<% }); %>'
     );
@@ -24,7 +24,7 @@ YUI.add('cb-card-list-view', function (Y) {
         initializer: function () {
             var cardList = this.get('modelList');
 
-            cardList.after(['add', 'remove', 'reset', '*.change'], this.render, this);
+            cardList.after(['add', 'remove', 'reset'], this.render, this);
         },
 
         render: function () {
@@ -42,12 +42,24 @@ YUI.add('cb-card-list-view', function (Y) {
 
         // ================ PRIVATE FUNCTIONS ===============
         _createAndSaveCard: function (cardContent) {
-            var card = new Card({
-                id: Y.guid(),
-                content: cardContent
-            });
+            var modelList = this.get('modelList'),
+                now = Date.now();
 
-            this.get('modelList').add(card);
+            modelList.add(new Card({
+                id: Y.guid(),
+                content: cardContent,
+                dateLastEdited: now,
+                dateCreated: now
+            }), {
+                silent: true
+            });
+        },
+
+        // Ensuring the last edited card is first in the list when rendered
+        _sortCardList: function () {
+            this.get('modelList').sort({
+                decending: true
+            });
         },
 
         // ================= EVENT HANDLERS =================
@@ -59,7 +71,10 @@ YUI.add('cb-card-list-view', function (Y) {
             this.set('activeCardNode', cardNode);
             this.get('container').detach('click');
 
-            cardNode.empty();
+            if (!cardNode.getData('id')) {
+                cardNode.empty();
+            }
+
             cardNode.on('clickoutside', this._switchToViewMode, this);
 
             // Turn into wysiwyg edit field.
@@ -69,18 +84,26 @@ YUI.add('cb-card-list-view', function (Y) {
         },
 
         _switchToViewMode: function (event) {
-            var activeCardNode = this.get('activeCardNode'),
-                cardContent = activeCardNode.getHTML();
+            var activeCardNode        = this.get('activeCardNode'),
+                cardList              = this.get('modelList'),
+                activeCardNodeContent = activeCardNode.getHTML(),
+                cardId                = activeCardNode.getData('id'),
+                card;
 
-            if (cardContent) {
-                this._createAndSaveCard(cardContent);
-            } else {
-                activeCardNode.setHTML('New Note');
+            if (!cardId && activeCardNodeContent) {
+                this._createAndSaveCard(activeCardNodeContent);
+            } else if (cardId) {
+                card = cardList.getById(cardId);
+
+                if (activeCardNodeContent !== card.get('content')) {
+                    cardList.updateCardContent(card, activeCardNodeContent);
+                }
             }
 
             activeCardNode.detach('clickoutside');
             this.set('activeCardNode', null);
-            this.get('container').delegate('click', this._switchToEditMode, '.' + CLASS_NAMES.card, this);
+
+            this._sortCardList();
         }
 
     }, {
