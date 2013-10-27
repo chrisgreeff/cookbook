@@ -1,10 +1,16 @@
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 10px 0;
+    font-family: 'kelson_sansregular', Arial;
+}
+
 body {
     margin: 0;
 }
 
-h2 {
-    margin-left: 20px;
-    margin-top: 3px;
-    margin-bottom: 0;
-    font-family: 'kelson_sansregular', Arial;
+ul {
+    padding: 0;
+}
+
+li {
+    list-style-type: none;
 }
