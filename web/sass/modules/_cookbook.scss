@@ -13,3 +13,15 @@
         outline-color: #F92770;
     }
 }
+
+.cb-card-container {
+    &,
+    ol {
+        list-style-type: none;
+    }
+
+    ul {
+        padding-left: 30px;
+        list-style-type: disc;
+    }
+}

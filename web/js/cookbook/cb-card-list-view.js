@@ -3,24 +3,33 @@ YUI.add('cb-card-list-view', function (Y) {
     'use strict';
 
     var Micro = new Y.Template(),
-        Card = Y.CB.Card,
+        Card  = Y.CB.Card,
 
         _renderCardList,
 
         CLASS_NAMES = {
-            card: 'cb-card'
+            card: 'cb-card',
+            cardContainer: 'cb-card-container',
+            newCard: 'cb-new-card'
         };
 
     _renderCardList = Micro.compile(
-        '<li class="' + CLASS_NAMES.card + '">New Note</li>' +
+        '<li class="' + CLASS_NAMES.cardContainer + '">' +
+            '<div class="' + CLASS_NAMES.card + ' ' + CLASS_NAMES.newCard + '">' +
+                'New Card' +
+            '</div>' +
+        '</li>' +
         '<% Y.Array.each(this.cards, function(card) { %>' +
-            '<li class="' + CLASS_NAMES.card + '" data-id="<%= card.id %>">' +
-                '<%== card.content %>' +
+            '<li class="' + CLASS_NAMES.cardContainer + '">' +
+                '<div class="' + CLASS_NAMES.card + '" data-id="<%= card.id %>">' +
+                    '<%== card.content %>' +
+                '</div>' +
             '</li>' +
         '<% }); %>'
     );
 
     Y.namespace('CB').CardListView = Y.Base.create('cb-card-list-view', Y.View, [], {
+
         initializer: function () {
             var cardList = this.get('modelList');
 
@@ -35,15 +44,62 @@ YUI.add('cb-card-list-view', function (Y) {
                 CLASS_NAMES: CLASS_NAMES
             }));
 
-            container.delegate('click', this._switchToEditMode, '.' + CLASS_NAMES.card, this);
+            container.delegate('click', function (event) {
+                this._switchToEditMode(event.target);
+            }, '.' + CLASS_NAMES.card, this);
 
             return this;
         },
 
         // ================ PRIVATE FUNCTIONS ===============
+
+        _switchToEditMode: function (cardNode) {
+            var cardList = this.get('modelList');
+
+            this.get('modelList').set('mode', 'edit');
+            this.set('activeCardNode', cardNode);
+            this.get('container').detach('click');
+
+            if (!cardNode.getData('id')) {
+                cardNode.empty();
+            }
+
+            cardNode.after('clickoutside', this._switchToViewMode, this);
+            cardNode.after('keydown', this._keyStrokeListener, this);
+
+            // Turn into wysiwyg edit field.
+            $(cardNode.getDOMNode()).wysiwyg();
+
+            cardNode.focus();
+        },
+
+        _switchToViewMode: function () {
+            var activeCardNode        = this.get('activeCardNode'),
+                cardList              = this.get('modelList'),
+                activeCardNodeContent = activeCardNode.getHTML(),
+                cardId                = activeCardNode.getData('id'),
+                card;
+
+            if (!cardId && activeCardNodeContent) {
+                this._createAndSaveCard(activeCardNodeContent);
+            } else if (cardId) {
+                card = cardList.getById(cardId);
+
+                if (activeCardNodeContent !== card.get('content')) {
+                    cardList.updateCardContent(card, activeCardNodeContent);
+                }
+            }
+
+            activeCardNode.detach('clickoutside');
+            activeCardNode.detach('clickoutside');
+            this.set('activeCardNode', null);
+
+            this._sortCardList();
+        },
+
         _createAndSaveCard: function (cardContent) {
             var modelList = this.get('modelList'),
-                now = Date.now();
+                now       = Date.now();
 
             modelList.add(new Card({
                 id: Y.guid(),
@@ -63,55 +119,54 @@ YUI.add('cb-card-list-view', function (Y) {
         },
 
         // ================= EVENT HANDLERS =================
-        _switchToEditMode: function (event) {
-            var cardNode = event.target,
-                cardList = this.get('modelList');
 
-            this.get('modelList').set('mode', 'edit');
-            this.set('activeCardNode', cardNode);
-            this.get('container').detach('click');
+        _keyStrokeListener: function (event) {
+            var keyCode = event.keyCode,
+                textCursorPosition = window.getSelection().extentOffset,
+                firstChar = this.get('firstChar');
 
-            if (!cardNode.getData('id')) {
-                cardNode.empty();
-            }
+            if (keyCode === 13 && event.shiftKey) {
+                event.preventDefault();
+                this._switchToViewMode();
 
-            cardNode.on('clickoutside', this._switchToViewMode, this);
+            } else if (textCursorPosition === 0) {
+                this.set('firstChar', keyCode);
 
-            // Turn into wysiwyg edit field.
-            $(event.target.getDOMNode()).wysiwyg();
-
-            cardNode.focus();
-        },
-
-        _switchToViewMode: function (event) {
-            var activeCardNode        = this.get('activeCardNode'),
-                cardList              = this.get('modelList'),
-                activeCardNodeContent = activeCardNode.getHTML(),
-                cardId                = activeCardNode.getData('id'),
-                card;
-
-            if (!cardId && activeCardNodeContent) {
-                this._createAndSaveCard(activeCardNodeContent);
-            } else if (cardId) {
-                card = cardList.getById(cardId);
-
-                if (activeCardNodeContent !== card.get('content')) {
-                    cardList.updateCardContent(card, activeCardNodeContent);
+            } else if (keyCode === 32 && textCursorPosition === 1) {
+                if (firstChar === 189) {
+                    event.preventDefault();
+                    document.execCommand('insertUnorderedList');
+                    document.execCommand('delete');
+                } else if (firstChar === 187) {
+                    event.preventDefault();
+                    document.execCommand('insertOrderedList');
+                    document.execCommand('delete');
+                    document.execCommand('insertHTML', false, '<input type="checkbox"/>');
                 }
             }
-
-            activeCardNode.detach('clickoutside');
-            this.set('activeCardNode', null);
-
-            this._sortCardList();
         }
 
     }, {
+
         ATTRS: {
             activeCardNode: {
                 value: null
+            },
+
+            firstChar: {
+                value: null
             }
         }
+
     });
 
-}, '1.0.0', { requires: ['base', 'event-outside', 'view', 'template', 'cb-card-list'] });
+}, '1.0.0', {
+    requires: [
+        'base',
+        'event-outside',
+        'node-event-simulate',
+        'view',
+        'template',
+        'cb-card-list'
+    ]
+});
