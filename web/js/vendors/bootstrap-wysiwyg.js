@@ -182,10 +182,6 @@
             'ctrl+u meta+u': 'underline',
             'ctrl+z meta+z': 'undo',
             'ctrl+y meta+y meta+shift+z': 'redo',
-            'ctrl+l meta+l': 'justifyleft',
-            'ctrl+r meta+r': 'justifyright',
-            'ctrl+e meta+e': 'justifycenter',
-            'ctrl+j meta+j': 'justifyfull',
             'shift+tab': 'outdent',
             'tab': 'indent'
         },
