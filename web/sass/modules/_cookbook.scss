@@ -1,0 +1,15 @@
+.cb-card {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    margin-top: 20px;
+    margin-right: 40px;
+    margin-left: 40px;
+    padding: 30px;
+    background-color: #FFFFFF;
+    
+    &:focus {
+        outline-style: solid;
+        outline-width: 2px;
+        outline-color: #F92770;
+    }
+}
