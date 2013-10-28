@@ -19,7 +19,6 @@ YUI.add('cb-card-list-view', function (Y) {
             newCard: 'cb-new-card',
             iconUnchecked: 'icon-checkbox-unchecked',
             iconChecked: 'icon-checkbox-checked'
-
         },
 
         KEY_CODES = {
@@ -110,7 +109,8 @@ YUI.add('cb-card-list-view', function (Y) {
         },
 
         _switchToViewMode: function () {
-            var activeCardNode        = this.get('activeCardNode'),
+            var container             = this.get('container'),
+                activeCardNode        = this.get('activeCardNode'),
                 cardList              = this.get('modelList'),
                 activeCardNodeContent = activeCardNode.getHTML(),
                 cardId                = activeCardNode.getData('id'),
@@ -128,7 +128,8 @@ YUI.add('cb-card-list-view', function (Y) {
 
             activeCardNode.removeClass(CLASS_NAMES.cardEditing);
             activeCardNode.detach('clickoutside');
-
+            container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
+            container.delegate('click', this._toggleCheckbox, '.' + CLASS_NAMES.cardCheckbox, this);
             Y.one(window).on('keydown', this._createNewNote, this);
 
             this.set('mode', 'view');
