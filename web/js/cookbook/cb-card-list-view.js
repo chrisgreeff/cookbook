@@ -24,10 +24,11 @@ YUI.add('cb-card-list-view', function (Y) {
         KEY_CODES = {
             backspace: 8,
             enter: 13,
+            escape: 27,
             space: 32,
+            n: 78,
             equals: 187,
-            dash: 189,
-            n: 78
+            dash: 189
         };
 
     _renderCardList = Micro.compile(
@@ -128,6 +129,7 @@ YUI.add('cb-card-list-view', function (Y) {
 
             activeCardNode.removeClass(CLASS_NAMES.cardEditing);
             activeCardNode.detach('clickoutside');
+
             container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
             container.delegate('click', this._toggleCheckbox, '.' + CLASS_NAMES.cardCheckbox, this);
             Y.one(window).on('keydown', this._createNewNote, this);
@@ -194,13 +196,29 @@ YUI.add('cb-card-list-view', function (Y) {
             var keyCode = event.keyCode,
                 textCursorPosition = window.getSelection().extentOffset,
                 textAnchorParentNode = Y.one(window.getSelection().anchorNode).get('parentNode'),
-                firstChar = this.get('firstChar');
+                firstChar = this.get('firstChar'),
+                oldContent,
+                cardId,
+                activeCardNode;
 
             if (keyCode === KEY_CODES.backspace) {
                 if (textCursorPosition === 1 && textAnchorParentNode.hasClass(CLASS_NAMES.cardCheckbox)) {
                     document.execCommand('delete');
                     document.execCommand('delete');
                 }
+
+            } else if (keyCode === KEY_CODES.escape) {
+                activeCardNode = this.get('activeCardNode');
+                cardId         = activeCardNode.getData('id');
+
+                if (cardId) {
+                    oldContent = this.get('modelList').getById(cardId).get('content');
+                } else {
+                    oldContent = '';
+                }
+
+                activeCardNode.setHTML(oldContent);
+                this._switchToViewMode();
 
             } else if (keyCode === KEY_CODES.enter) {
                 if (event.shiftKey) {
