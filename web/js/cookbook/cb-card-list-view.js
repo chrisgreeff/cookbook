@@ -26,6 +26,7 @@ YUI.add('cb-card-list-view', function (Y) {
             space: 32,
             equals: 187,
             dash: 189,
+            n: 78
         };
 
     _renderCardList = Micro.compile(
@@ -60,21 +61,22 @@ YUI.add('cb-card-list-view', function (Y) {
     Y.namespace('CB').CardListView = Y.Base.create('cb-card-list-view', Y.View, [], {
 
         initializer: function () {
-            var cardList = this.get('modelList');
+            var cardList = this.get('modelList'),
+                container = this.get('container');
 
             cardList.after(['add', 'remove', 'reset'], this.render, this);
-        },
-
-        render: function () {
-            var container = this.get('container');
-
-            container.setHTML(_renderCardList({
-                cards: this.get('modelList').toJSON(),
-                CLASS_NAMES: CLASS_NAMES
-            }));
 
             container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
             container.delegate('click', this._toggleCheckbox, '.' + CLASS_NAMES.cardCheckbox, this);
+
+            Y.one(window).on('keydown', this._createNewNote, this);
+        },
+
+        render: function () {
+            this.get('container').setHTML(_renderCardList({
+                cards: this.get('modelList').toJSON(),
+                CLASS_NAMES: CLASS_NAMES
+            }));
 
             return this;
         },
@@ -99,6 +101,9 @@ YUI.add('cb-card-list-view', function (Y) {
             // Turn into wysiwyg edit field.
             $(cardNode.getDOMNode()).wysiwyg();
 
+            this.set('mode', 'edit');
+            Y.one(window).detach('keydown', this._createNewNote);
+
             cardNode.focus();
         },
 
@@ -121,6 +126,10 @@ YUI.add('cb-card-list-view', function (Y) {
 
             activeCardNode.detach('clickoutside');
             activeCardNode.detach('clickoutside');
+
+            Y.one(window).on('keydown', this._createNewNote, this);
+
+            this.set('mode', 'view');
             this.set('activeCardNode', null);
 
             this._sortCardList();
@@ -148,6 +157,13 @@ YUI.add('cb-card-list-view', function (Y) {
         },
 
         // ================= EVENT HANDLERS =================
+
+        _createNewNote: function (event) {
+            if (event.keyCode === KEY_CODES.n && event.shiftKey) {
+                event.preventDefault();
+                this._switchToEditMode(Y.one('.' + CLASS_NAMES.newCard));
+            }
+        },
 
         _getCardForEditMode: function (event) {
             var targetNode = event.target,
@@ -220,6 +236,10 @@ YUI.add('cb-card-list-view', function (Y) {
     }, {
 
         ATTRS: {
+            mode: {
+                value: 'view'
+            },
+
             activeCardNode: {
                 value: null
             },
