@@ -12,6 +12,7 @@ YUI.add('cb-card-list-view', function (Y) {
         CLASS_NAMES = {
             card: 'cb-card',
             cardContainer: 'cb-card-container',
+            cardCheckbox: 'cb-card-checkbox',
             cardNote: 'cb-card-note',
             cardTodo: 'cb-card-todo',
             newCard: 'cb-new-card',
@@ -51,7 +52,7 @@ YUI.add('cb-card-list-view', function (Y) {
     _renderTodoListItem = Micro.compile(
         '<ol class="' + CLASS_NAMES.cardTodo + '">' +
             '<li>' +
-                '<span class="icon-checkbox-unchecked">&nbsp;</span>' +
+                '<span class="' + CLASS_NAMES.cardCheckbox + ' ' + CLASS_NAMES.iconUnchecked + '">&nbsp;</span>' +
             '</li>' +
         '</ol>'
     );
@@ -73,6 +74,7 @@ YUI.add('cb-card-list-view', function (Y) {
             }));
 
             container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
+            container.delegate('click', this._toggleCheckbox, '.' + CLASS_NAMES.cardCheckbox, this);
 
             return this;
         },
@@ -154,6 +156,20 @@ YUI.add('cb-card-list-view', function (Y) {
             this._switchToEditMode(cardNode);
         },
 
+        _toggleCheckbox: function (event) {
+            var checkboxNode = event.target;
+
+            if (checkboxNode.hasClass(CLASS_NAMES.iconUnchecked)) {
+                checkboxNode.removeClass(CLASS_NAMES.iconUnchecked);
+                checkboxNode.addClass(CLASS_NAMES.iconChecked);
+            } else {
+                checkboxNode.removeClass(CLASS_NAMES.iconChecked);
+                checkboxNode.addClass(CLASS_NAMES.iconUnchecked);
+            }
+
+            this._switchToViewMode();
+        },
+
         _keyStrokeListener: function (event) {
             var keyCode = event.keyCode,
                 textCursorPosition = window.getSelection().extentOffset,
@@ -167,18 +183,16 @@ YUI.add('cb-card-list-view', function (Y) {
                 this.set('firstChar', keyCode);
 
             } else if (keyCode === KEY_CODES.space && textCursorPosition === 1) {
-                if (firstChar === 189) {
+                if (firstChar === KEY_CODES.dash) {
                     event.preventDefault();
                     document.execCommand('delete');
                     document.execCommand('insertHTML', false, _renderNoteListItem());
-                } else if (firstChar === 187) {
+
+                } else if (firstChar === KEY_CODES.equals) {
                     event.preventDefault();
                     document.execCommand('delete');
                     document.execCommand('insertHTML', false, _renderTodoListItem());
                 }
-
-            } else if (keyCode === 8) {
-
             }
         }
 
