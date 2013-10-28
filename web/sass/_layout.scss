@@ -15,7 +15,51 @@
 }
 
 #main {
-    height:100%;
+    height: 100%;
 }
 
+#cb-tutorial-header {
+    padding-right:40px;
+    padding-left:40px;
+    padding-top: 10px;
+    font-family: 'roboto', Arial, sans-serif; 
+    color: #999999;
+    font-size: 13px;
+    width: auto;
+    background: #FFFFC2;
+    display:none;
+}
 
+#cb-tutorial-banner {
+    padding-right:40px;
+    padding-left:40px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-family: 'roboto', Arial, sans-serif; 
+    color: #999999;
+    font-size: 13px;
+    width: auto;
+    background: #FFFFC2;
+}
+
+.cb-tutorial-header {
+    display:block;
+    width:100%;
+}
+
+.cb-tutorial {
+    width:100%;
+    display:inline;
+    margin-left:6px;
+    margin-right:6px;
+    line-height: 2.5;
+}
+
+.cb-tutorial-button {
+    border-style: solid;
+    border-width: 1px;
+    position: inline;
+    padding: 5px;
+    margin-right: 5px;
+    border-radius: 5px;
+}
