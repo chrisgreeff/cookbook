@@ -83,8 +83,23 @@
 }
 .icon-checkbox-unchecked:before {
     content: "\e601";
+    position: relative;
+    top: 2px;
 }
 .icon-checkbox-checked:before {
     content: "\e602";
+    position: relative;
+    top: 2px;
 }
 
+.icon-file {
+    color: #F5276F;
+    padding-left: 6px;
+    padding-right: 9px;
+    position: relative;
+    top:2px;
+}
+
+.icon-checkbox-checked {
+    color: #BEBEBE;
+}
