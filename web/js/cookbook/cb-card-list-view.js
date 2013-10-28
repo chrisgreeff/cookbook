@@ -39,7 +39,7 @@ YUI.add('cb-card-list-view', function (Y) {
         '</li>' +
         '<% Y.Array.each(this.cards, function(card) { %>' +
             '<li class="' + CLASS_NAMES.cardContainer + '">' +
-                '<div class="' + CLASS_NAMES.card + '" data-id="<%= card.id %>">' +
+                '<div tabindex="0" class="' + CLASS_NAMES.card + '" data-id="<%= card.id %>">' +
                     '<%== card.content %>' +
                 '</div>' +
             '</li>' +
