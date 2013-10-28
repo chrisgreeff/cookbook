@@ -28,6 +28,18 @@
     }
 }
 
+.cb-new-card {
+    color: #bebebe;
+    margin-top: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.cb-card-editing{
+    color: black;
+    box-shadow: 0px 0px 10px #bebebe;
+}
+
 @font-face {
     font-family: 'icomoon';
     src:url('../fonts/icomoon.eot');
@@ -38,6 +50,19 @@
     font-weight: normal;
     font-style: normal;
 }
+
+@font-face {
+    font-family: 'kelson_sansregular';
+    src: url('../fonts/kelson_sans_regular-webfont.eot');
+    src: url('../fonts/kelson_sans_regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/kelson_sans_regular-webfont.woff') format('woff'),
+         url('../fonts/kelson_sans_regular-webfont.ttf') format('truetype'),
+         url('../fonts/kelson_sans_regular-webfont.svg#kelson_sansregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
 
 [class*="icon-"] {
     font-family: 'icomoon';

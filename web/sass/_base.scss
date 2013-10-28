@@ -1,10 +1,16 @@
 h1, h2, h3, h4, h5, h6 {
-    margin: 0 0 10px 0;
+    margin: 0 0 0 0;
     font-family: 'kelson_sansregular', Arial;
 }
 
 body {
     margin: 0;
+    min-height:100%;
+    background-color: #F1F1F1;
+}
+
+html {
+    height:100%;
 }
 
 ul, ol {

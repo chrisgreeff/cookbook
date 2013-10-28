@@ -7,11 +7,13 @@
     text-transform: uppercase;
 }
 
-#body {
-    position: absolute;
-    top: 40px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #F1F1F1;
+#header h2 {
+    font-family: 'kelson_sansregular', Arial, sans-serif; 
+    padding-top: 4px;
+    padding-left: 10px;
+    color:#fff;
+}
+
+#main {
+    height:100%;
 }

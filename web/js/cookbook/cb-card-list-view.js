@@ -12,11 +12,13 @@ YUI.add('cb-card-list-view', function (Y) {
         CLASS_NAMES = {
             card: 'cb-card',
             cardContainer: 'cb-card-container',
+            cardEditing: 'cb-card-editing',
             cardNote: 'cb-card-note',
             cardTodo: 'cb-card-todo',
             newCard: 'cb-new-card',
             iconUnchecked: 'icon-checkbox-unchecked',
             iconChecked: 'icon-checkbox-checked'
+
         },
 
         KEY_CODES = {
@@ -89,7 +91,7 @@ YUI.add('cb-card-list-view', function (Y) {
             if (!cardNode.getData('id')) {
                 cardNode.empty();
             }
-
+            cardNode.addClass(CLASS_NAMES.cardEditing);
             cardNode.after('clickoutside', this._switchToViewMode, this);
             cardNode.after('keydown', this._keyStrokeListener, this);
 
@@ -116,7 +118,7 @@ YUI.add('cb-card-list-view', function (Y) {
                 }
             }
 
-            activeCardNode.detach('clickoutside');
+            activeCardNode.removeClass(CLASS_NAMES.cardEditing);
             activeCardNode.detach('clickoutside');
             this.set('activeCardNode', null);
 
