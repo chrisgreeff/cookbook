@@ -70,7 +70,7 @@ YUI.add('cb-card-list-view', function (Y) {
 
             container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
             container.delegate('click', this._toggleCheckbox, '.' + CLASS_NAMES.cardCheckbox, this);
-
+            container.delegate('paste', this._pasteAsPlainText, '.' + CLASS_NAMES.card, this);
             Y.one(window).on('keydown', this._createNewNote, this);
         },
 
@@ -190,6 +190,11 @@ YUI.add('cb-card-list-view', function (Y) {
             }
 
             this._switchToViewMode();
+        },
+
+        _pasteAsPlainText: function (event) {
+            event.preventDefault();
+            document.execCommand('insertHTML', false, event._event.clipboardData.getData('text/plain'));
         },
 
         _keydownStrokeListener: function (event) {
