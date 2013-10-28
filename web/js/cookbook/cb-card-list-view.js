@@ -13,6 +13,7 @@ YUI.add('cb-card-list-view', function (Y) {
             card: 'cb-card',
             cardContainer: 'cb-card-container',
             cardEditing: 'cb-card-editing',
+            cardCheckbox: 'cb-card-checkbox',
             cardNote: 'cb-card-note',
             cardTodo: 'cb-card-todo',
             newCard: 'cb-new-card',
@@ -27,6 +28,7 @@ YUI.add('cb-card-list-view', function (Y) {
             space: 32,
             equals: 187,
             dash: 189,
+            n: 78
         };
 
     _renderCardList = Micro.compile(
@@ -53,7 +55,7 @@ YUI.add('cb-card-list-view', function (Y) {
     _renderTodoListItem = Micro.compile(
         '<ol class="' + CLASS_NAMES.cardTodo + '">' +
             '<li>' +
-                '<span class="icon-checkbox-unchecked">&nbsp;</span>' +
+                '<span class="' + CLASS_NAMES.cardCheckbox + ' ' + CLASS_NAMES.iconUnchecked + '">&nbsp;</span>' +
             '</li>' +
         '</ol>'
     );
@@ -61,20 +63,22 @@ YUI.add('cb-card-list-view', function (Y) {
     Y.namespace('CB').CardListView = Y.Base.create('cb-card-list-view', Y.View, [], {
 
         initializer: function () {
-            var cardList = this.get('modelList');
+            var cardList = this.get('modelList'),
+                container = this.get('container');
 
             cardList.after(['add', 'remove', 'reset'], this.render, this);
+
+            container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
+            container.delegate('click', this._toggleCheckbox, '.' + CLASS_NAMES.cardCheckbox, this);
+
+            Y.one(window).on('keydown', this._createNewNote, this);
         },
 
         render: function () {
-            var container = this.get('container');
-
-            container.setHTML(_renderCardList({
+            this.get('container').setHTML(_renderCardList({
                 cards: this.get('modelList').toJSON(),
                 CLASS_NAMES: CLASS_NAMES
             }));
-
-            container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
 
             return this;
         },
@@ -93,10 +97,14 @@ YUI.add('cb-card-list-view', function (Y) {
             }
             cardNode.addClass(CLASS_NAMES.cardEditing);
             cardNode.after('clickoutside', this._switchToViewMode, this);
-            cardNode.after('keydown', this._keyStrokeListener, this);
+            cardNode.after('keydown', this._keydownStrokeListener, this);
+            cardNode.after('keyup', this._keyupStrokeListener, this);
 
             // Turn into wysiwyg edit field.
             $(cardNode.getDOMNode()).wysiwyg();
+
+            this.set('mode', 'edit');
+            Y.one(window).detach('keydown', this._createNewNote);
 
             cardNode.focus();
         },
@@ -120,6 +128,10 @@ YUI.add('cb-card-list-view', function (Y) {
 
             activeCardNode.removeClass(CLASS_NAMES.cardEditing);
             activeCardNode.detach('clickoutside');
+
+            Y.one(window).on('keydown', this._createNewNote, this);
+
+            this.set('mode', 'view');
             this.set('activeCardNode', null);
 
             this._sortCardList();
@@ -148,6 +160,13 @@ YUI.add('cb-card-list-view', function (Y) {
 
         // ================= EVENT HANDLERS =================
 
+        _createNewNote: function (event) {
+            if (event.keyCode === KEY_CODES.n && event.shiftKey) {
+                event.preventDefault();
+                this._switchToEditMode(Y.one('.' + CLASS_NAMES.newCard));
+            }
+        },
+
         _getCardForEditMode: function (event) {
             var targetNode = event.target,
                 cardClass = CLASS_NAMES.card,
@@ -156,37 +175,73 @@ YUI.add('cb-card-list-view', function (Y) {
             this._switchToEditMode(cardNode);
         },
 
-        _keyStrokeListener: function (event) {
+        _toggleCheckbox: function (event) {
+            var checkboxNode = event.target;
+
+            if (checkboxNode.hasClass(CLASS_NAMES.iconUnchecked)) {
+                checkboxNode.removeClass(CLASS_NAMES.iconUnchecked);
+                checkboxNode.addClass(CLASS_NAMES.iconChecked);
+            } else {
+                checkboxNode.removeClass(CLASS_NAMES.iconChecked);
+                checkboxNode.addClass(CLASS_NAMES.iconUnchecked);
+            }
+
+            this._switchToViewMode();
+        },
+
+        _keydownStrokeListener: function (event) {
             var keyCode = event.keyCode,
                 textCursorPosition = window.getSelection().extentOffset,
+                textAnchorParentNode = Y.one(window.getSelection().anchorNode).get('parentNode'),
                 firstChar = this.get('firstChar');
 
-            if (keyCode === KEY_CODES.enter && event.shiftKey) {
-                event.preventDefault();
-                this._switchToViewMode();
+            if (keyCode === KEY_CODES.backspace) {
+                if (textCursorPosition === 1 && textAnchorParentNode.hasClass(CLASS_NAMES.cardCheckbox)) {
+                    document.execCommand('delete');
+                    document.execCommand('delete');
+                }
+
+            } else if (keyCode === KEY_CODES.enter) {
+                if (event.shiftKey) {
+                    event.preventDefault();
+                    this._switchToViewMode();
+                } else if (textAnchorParentNode.hasClass(CLASS_NAMES.cardCheckbox)) {
+                    document.execCommand('insertHTML', false, '&nbsp;');
+                }
 
             } else if (textCursorPosition === 0) {
                 this.set('firstChar', keyCode);
 
             } else if (keyCode === KEY_CODES.space && textCursorPosition === 1) {
-                if (firstChar === 189) {
+                if (firstChar === KEY_CODES.dash) {
                     event.preventDefault();
                     document.execCommand('delete');
                     document.execCommand('insertHTML', false, _renderNoteListItem());
-                } else if (firstChar === 187) {
+
+                } else if (firstChar === KEY_CODES.equals) {
                     event.preventDefault();
                     document.execCommand('delete');
                     document.execCommand('insertHTML', false, _renderTodoListItem());
                 }
+            }
+        },
 
-            } else if (keyCode === 8) {
+        _keyupStrokeListener: function (event) {
+            var keyCode = event.keyCode,
+                textAnchorNode = Y.one(window.getSelection().anchorNode);
 
+            if (keyCode === KEY_CODES.enter && textAnchorNode.hasClass(CLASS_NAMES.cardCheckbox)) {
+                document.execCommand('insertHTML', false, '&nbsp;');
             }
         }
 
     }, {
 
         ATTRS: {
+            mode: {
+                value: 'view'
+            },
+
             activeCardNode: {
                 value: null
             },

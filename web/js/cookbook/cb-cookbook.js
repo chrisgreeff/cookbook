@@ -15,7 +15,7 @@ YUI.add('cb-cookbook', function (Y) {
 
             cardListView = new Y.CB.CardListView({
                 modelList: cardList,
-                container: Y.one('.card-list')
+                container: Y.one('.cb-card-list')
             });
 
             cardListView.render();
