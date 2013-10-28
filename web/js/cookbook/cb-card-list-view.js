@@ -6,11 +6,25 @@ YUI.add('cb-card-list-view', function (Y) {
         Card  = Y.CB.Card,
 
         _renderCardList,
+        _renderNoteListItem,
+        _renderTodoListItem,
 
         CLASS_NAMES = {
             card: 'cb-card',
             cardContainer: 'cb-card-container',
-            newCard: 'cb-new-card'
+            cardNote: 'cb-card-note',
+            cardTodo: 'cb-card-todo',
+            newCard: 'cb-new-card',
+            iconUnchecked: 'icon-checkbox-unchecked',
+            iconChecked: 'icon-checkbox-checked'
+        },
+
+        KEY_CODES = {
+            backspace: 8,
+            enter: 13,
+            space: 32,
+            equals: 187,
+            dash: 189,
         };
 
     _renderCardList = Micro.compile(
@@ -26,6 +40,20 @@ YUI.add('cb-card-list-view', function (Y) {
                 '</div>' +
             '</li>' +
         '<% }); %>'
+    );
+
+    _renderNoteListItem = Micro.compile(
+        '<ul class="' + CLASS_NAMES.cardNote + '">' +
+            '<li></li>' +
+        '</ul>'
+    );
+
+    _renderTodoListItem = Micro.compile(
+        '<ol class="' + CLASS_NAMES.cardTodo + '">' +
+            '<li>' +
+                '<span class="icon-checkbox-unchecked">&nbsp;</span>' +
+            '</li>' +
+        '</ol>'
     );
 
     Y.namespace('CB').CardListView = Y.Base.create('cb-card-list-view', Y.View, [], {
@@ -44,9 +72,7 @@ YUI.add('cb-card-list-view', function (Y) {
                 CLASS_NAMES: CLASS_NAMES
             }));
 
-            container.delegate('click', function (event) {
-                this._switchToEditMode(event.target);
-            }, '.' + CLASS_NAMES.card, this);
+            container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
 
             return this;
         },
@@ -120,29 +146,39 @@ YUI.add('cb-card-list-view', function (Y) {
 
         // ================= EVENT HANDLERS =================
 
+        _getCardForEditMode: function (event) {
+            var targetNode = event.target,
+                cardClass = CLASS_NAMES.card,
+                cardNode = targetNode.hasClass(cardClass) ? targetNode : targetNode.ancestor('.' + cardClass);
+
+            this._switchToEditMode(cardNode);
+        },
+
         _keyStrokeListener: function (event) {
             var keyCode = event.keyCode,
                 textCursorPosition = window.getSelection().extentOffset,
                 firstChar = this.get('firstChar');
 
-            if (keyCode === 13 && event.shiftKey) {
+            if (keyCode === KEY_CODES.enter && event.shiftKey) {
                 event.preventDefault();
                 this._switchToViewMode();
 
             } else if (textCursorPosition === 0) {
                 this.set('firstChar', keyCode);
 
-            } else if (keyCode === 32 && textCursorPosition === 1) {
+            } else if (keyCode === KEY_CODES.space && textCursorPosition === 1) {
                 if (firstChar === 189) {
                     event.preventDefault();
-                    document.execCommand('insertUnorderedList');
                     document.execCommand('delete');
+                    document.execCommand('insertHTML', false, _renderNoteListItem());
                 } else if (firstChar === 187) {
                     event.preventDefault();
-                    document.execCommand('insertOrderedList');
                     document.execCommand('delete');
-                    document.execCommand('insertHTML', false, '<input type="checkbox"/>');
+                    document.execCommand('insertHTML', false, _renderTodoListItem());
                 }
+
+            } else if (keyCode === 8) {
+
             }
         }
 
