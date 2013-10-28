@@ -13,13 +13,15 @@ YUI.add('cb-card-list', function (Y) {
                 silent: true
             });
 
-            card.set('content', content);
-            card.set('dateLastEdited', Date.now());
+            if (content) {
+                card.set('content', content);
+                card.set('dateLastEdited', Date.now());
 
-            this.add(card, {
-                index: index,
-                silent: true
-            });
+                this.add(card, {
+                    index: index,
+                    silent: true
+                });
+            }
         },
 
         comparator: function (model) {

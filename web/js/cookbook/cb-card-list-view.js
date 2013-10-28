@@ -123,7 +123,9 @@ YUI.add('cb-card-list-view', function (Y) {
                 card = cardList.getById(cardId);
 
                 if (activeCardNodeContent !== card.get('content')) {
-                    cardList.updateCardContent(card, activeCardNodeContent);
+                    if (activeCardNodeContent || confirm('Bro are you sure...?')) {
+                        cardList.updateCardContent(card, activeCardNodeContent);
+                    }
                 }
             }
 
