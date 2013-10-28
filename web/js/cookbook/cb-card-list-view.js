@@ -93,7 +93,8 @@ YUI.add('cb-card-list-view', function (Y) {
             }
 
             cardNode.after('clickoutside', this._switchToViewMode, this);
-            cardNode.after('keydown', this._keyStrokeListener, this);
+            cardNode.after('keydown', this._keydownStrokeListener, this);
+            cardNode.after('keyup', this._keyupStrokeListener, this);
 
             // Turn into wysiwyg edit field.
             $(cardNode.getDOMNode()).wysiwyg();
@@ -170,14 +171,25 @@ YUI.add('cb-card-list-view', function (Y) {
             this._switchToViewMode();
         },
 
-        _keyStrokeListener: function (event) {
+        _keydownStrokeListener: function (event) {
             var keyCode = event.keyCode,
                 textCursorPosition = window.getSelection().extentOffset,
+                textAnchorParentNode = Y.one(window.getSelection().anchorNode).get('parentNode'),
                 firstChar = this.get('firstChar');
 
-            if (keyCode === KEY_CODES.enter && event.shiftKey) {
-                event.preventDefault();
-                this._switchToViewMode();
+            if (keyCode === KEY_CODES.backspace) {
+                if (textCursorPosition === 1 && textAnchorParentNode.hasClass(CLASS_NAMES.cardCheckbox)) {
+                    document.execCommand('delete');
+                    document.execCommand('delete');
+                }
+
+            } else if (keyCode === KEY_CODES.enter) {
+                if (event.shiftKey) {
+                    event.preventDefault();
+                    this._switchToViewMode();
+                } else if (textAnchorParentNode.hasClass(CLASS_NAMES.cardCheckbox)) {
+                    document.execCommand('insertHTML', false, '&nbsp;');
+                }
 
             } else if (textCursorPosition === 0) {
                 this.set('firstChar', keyCode);
@@ -193,6 +205,15 @@ YUI.add('cb-card-list-view', function (Y) {
                     document.execCommand('delete');
                     document.execCommand('insertHTML', false, _renderTodoListItem());
                 }
+            }
+        },
+
+        _keyupStrokeListener: function (event) {
+            var keyCode = event.keyCode,
+                textAnchorNode = Y.one(window.getSelection().anchorNode);
+
+            if (keyCode === KEY_CODES.enter && textAnchorNode.hasClass(CLASS_NAMES.cardCheckbox)) {
+                document.execCommand('insertHTML', false, '&nbsp;');
             }
         }
 
