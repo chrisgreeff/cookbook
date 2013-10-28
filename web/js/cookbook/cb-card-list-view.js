@@ -55,7 +55,7 @@ YUI.add('cb-card-list-view', function (Y) {
     _renderTodoListItem = Micro.compile(
         '<ol class="' + CLASS_NAMES.cardTodo + '">' +
             '<li>' +
-                '<span class="' + CLASS_NAMES.cardCheckbox + ' ' + CLASS_NAMES.iconUnchecked + '">&nbsp;</span>' +
+                '<span class="' + CLASS_NAMES.cardCheckbox + ' ' + CLASS_NAMES.iconUnchecked + '"></span>&nbsp;' +
             '</li>' +
         '</ol>'
     );
@@ -208,10 +208,14 @@ YUI.add('cb-card-list-view', function (Y) {
                 cardId,
                 activeCardNode;
 
-            if (keyCode === KEY_CODES.backspace) {
-                if (textCursorPosition === 1 && textAnchorParentNode.hasClass(CLASS_NAMES.cardCheckbox)) {
+            if (textCursorPosition === 1 && textAnchorParentNode.hasClass(CLASS_NAMES.cardCheckbox)) {
+                if (keyCode === KEY_CODES.backspace) {
                     document.execCommand('delete');
                     document.execCommand('delete');
+                } else if (keyCode === KEY_CODES.enter) {
+                    event.preventDefault();
+                    activeCardNode = this.get('activeCardNode')
+                    activeCardNode.simulate('keydown', { keyCode: KEY_CODES.backspace });
                 }
 
             } else if (keyCode === KEY_CODES.escape) {
@@ -227,14 +231,9 @@ YUI.add('cb-card-list-view', function (Y) {
                 activeCardNode.setHTML(oldContent);
                 this._switchToViewMode();
 
-            } else if (keyCode === KEY_CODES.enter) {
-                if (event.shiftKey) {
-                    event.preventDefault();
-                    this._switchToViewMode();
-                } else if (textAnchorParentNode.hasClass(CLASS_NAMES.cardCheckbox)) {
-                    document.execCommand('insertHTML', false, '&nbsp;');
-                }
-
+            } else if (keyCode === KEY_CODES.enter && event.shiftKey) {
+                event.preventDefault();
+                this._switchToViewMode();
             } else if (textCursorPosition === 0) {
                 this.set('firstChar', keyCode);
 
