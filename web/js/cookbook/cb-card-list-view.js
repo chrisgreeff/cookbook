@@ -16,6 +16,7 @@ YUI.add('cb-card-list-view', function (Y) {
             cardCheckbox: 'cb-card-checkbox',
             cardNote: 'cb-card-note',
             cardTodo: 'cb-card-todo',
+            cardTodoContent: 'cb-card-todo-content',
             newCard: 'cb-new-card',
             iconUnchecked: 'icon-checkbox-unchecked',
             iconChecked: 'icon-checkbox-checked'
@@ -55,7 +56,8 @@ YUI.add('cb-card-list-view', function (Y) {
     _renderTodoListItem = Micro.compile(
         '<ol class="' + CLASS_NAMES.cardTodo + '">' +
             '<li>' +
-                '<span class="' + CLASS_NAMES.cardCheckbox + ' ' + CLASS_NAMES.iconUnchecked + '"></span>&nbsp;' +
+                '<span class="' + CLASS_NAMES.cardCheckbox + ' ' + CLASS_NAMES.iconUnchecked + '"></span>' +
+                '<span class="' + CLASS_NAMES.cardTodoContent + '">&nbsp;</span>' +
             '</li>' +
         '</ol>'
     );

@@ -1,3 +1,14 @@
+.cb-card-container {
+    list-style-type: none;
+}
+
+.cb-new-card {
+    color: #BEBEBE;
+    margin-top: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
 .cb-card {
     font-family: 'Roboto', sans-serif, !important;
     font-weight: 300;
@@ -15,28 +26,17 @@
     }
 }
 
-.cb-card-container {
+.cb-card-note {
+    list-style-type: disc;
+    padding-left: 30px;
+}
+
+.cb-card-todo {
     list-style-type: none;
-
-    .cb-card-note {
-        list-style-type: disc;
-        padding-left: 30px;
-    }
-
-    .cb-card-todo {
-        list-style-type: none;
-        padding-left: 7px;
-    }
+    padding-left: 7px;
 }
 
-.cb-new-card {
-    color: #BEBEBE;
-    margin-top: 20px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-}
-
-.cb-card-editing{
+.cb-card-editing {
     color: black;
     box-shadow: 0px 0px 10px #EEEEEE;
 }
@@ -81,11 +81,13 @@
 .icon-file:before {
     content: "\e600";
 }
+
 .icon-checkbox-unchecked:before {
     content: "\e601";
     position: relative;
     top: 2px;
 }
+
 .icon-checkbox-checked:before {
     content: "\e602";
     position: relative;
@@ -97,7 +99,7 @@
     padding-left: 6px;
     padding-right: 9px;
     position: relative;
-    top:2px;
+    top: 2px;
 }
 
 .icon-checkbox-checked {
