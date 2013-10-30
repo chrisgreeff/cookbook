@@ -16,7 +16,6 @@ YUI.add('cb-card-list-view', function (Y) {
             cardCheckbox: 'cb-card-checkbox',
             cardNote: 'cb-card-note',
             cardTodo: 'cb-card-todo',
-            cardTodoContent: 'cb-card-todo-content',
             newCard: 'cb-new-card',
             iconUnchecked: 'icon-checkbox-unchecked',
             iconChecked: 'icon-checkbox-checked'
@@ -55,10 +54,7 @@ YUI.add('cb-card-list-view', function (Y) {
 
     _renderTodoListItem = Micro.compile(
         '<ol class="' + CLASS_NAMES.cardTodo + '">' +
-            '<li>' +
-                '<span class="' + CLASS_NAMES.cardCheckbox + ' ' + CLASS_NAMES.iconUnchecked + '"></span>' +
-                '<span class="' + CLASS_NAMES.cardTodoContent + '">&nbsp;</span>' +
-            '</li>' +
+            '<li class="' + CLASS_NAMES.iconUnchecked + ' ' + CLASS_NAMES.cardCheckbox + '">&nbsp;</li>' +
         '</ol>'
     );
 
@@ -100,7 +96,6 @@ YUI.add('cb-card-list-view', function (Y) {
             cardNode.addClass(CLASS_NAMES.cardEditing);
             cardNode.after('clickoutside', this._switchToViewMode, this);
             cardNode.after('keydown', this._keydownStrokeListener, this);
-            cardNode.after('keyup', this._keyupStrokeListener, this);
 
             // Turn into wysiwyg edit field.
             $(cardNode.getDOMNode()).wysiwyg();
@@ -204,23 +199,11 @@ YUI.add('cb-card-list-view', function (Y) {
         _keydownStrokeListener: function (event) {
             var keyCode = event.keyCode,
                 textCursorPosition = window.getSelection().extentOffset,
-                textAnchorParentNode = Y.one(window.getSelection().anchorNode).get('parentNode'),
                 firstChar = this.get('firstChar'),
                 oldContent,
-                cardId,
-                activeCardNode;
+                cardId;
 
-            if (textCursorPosition === 1 && textAnchorParentNode.hasClass(CLASS_NAMES.cardCheckbox)) {
-                if (keyCode === KEY_CODES.backspace) {
-                    document.execCommand('delete');
-                    document.execCommand('delete');
-                } else if (keyCode === KEY_CODES.enter) {
-                    event.preventDefault();
-                    activeCardNode = this.get('activeCardNode')
-                    activeCardNode.simulate('keydown', { keyCode: KEY_CODES.backspace });
-                }
-
-            } else if (keyCode === KEY_CODES.escape) {
+            if (keyCode === KEY_CODES.escape) {
                 activeCardNode = this.get('activeCardNode');
                 cardId         = activeCardNode.getData('id');
 
@@ -232,14 +215,18 @@ YUI.add('cb-card-list-view', function (Y) {
 
                 activeCardNode.setHTML(oldContent);
                 this._switchToViewMode();
+            }
 
-            } else if (keyCode === KEY_CODES.enter && event.shiftKey) {
+            if (keyCode === KEY_CODES.enter && event.shiftKey) {
                 event.preventDefault();
                 this._switchToViewMode();
-            } else if (textCursorPosition === 0) {
-                this.set('firstChar', keyCode);
+            }
 
-            } else if (keyCode === KEY_CODES.space && textCursorPosition === 1) {
+            if (textCursorPosition === 0) {
+                this.set('firstChar', keyCode);
+            }
+
+            if (keyCode === KEY_CODES.space && textCursorPosition === 1) {
                 if (firstChar === KEY_CODES.dash) {
                     event.preventDefault();
                     document.execCommand('delete');
@@ -249,16 +236,10 @@ YUI.add('cb-card-list-view', function (Y) {
                     event.preventDefault();
                     document.execCommand('delete');
                     document.execCommand('insertHTML', false, _renderTodoListItem());
+                    Y.later(0, this, function () {
+                        document.execCommand('delete');
+                    });
                 }
-            }
-        },
-
-        _keyupStrokeListener: function (event) {
-            var keyCode = event.keyCode,
-                textAnchorNode = Y.one(window.getSelection().anchorNode);
-
-            if (keyCode === KEY_CODES.enter && textAnchorNode.hasClass(CLASS_NAMES.cardCheckbox)) {
-                document.execCommand('insertHTML', false, '&nbsp;');
             }
         }
 
@@ -286,6 +267,7 @@ YUI.add('cb-card-list-view', function (Y) {
         'event-outside',
         'node-event-simulate',
         'view',
+        'yui-later',
         'template',
         'cb-card-list'
     ]
