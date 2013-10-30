@@ -16,13 +16,10 @@
 
 #main {
     height: 100%;
+    padding: 20px 40px;
 }
 
 #cb-tutorial-banner {
-    // padding-top: 5px;
-    // padding-left:40px;
-    // padding-right:40px;
-    // padding-bottom: 5px;
     width: 85px;
     height: 27px;
     border-bottom-right-radius: 10px;
@@ -37,10 +34,6 @@
 }
 
 #cb-tutorial-banner:hover {
-    // padding-top: 5px;
-    // padding-left:40px;
-    // padding-right:40px;
-    // padding-bottom: 5px;
     width: 100%;
     font-family: 'roboto', Arial, sans-serif; 
     color: #999999;
@@ -50,9 +43,7 @@
     position: relative;
     box-shadow: 0px 0px 5px #BEBEBE;
     overflow: hidden;
-
 }
-
 
 .cb-tutorial {
     width: 100%;
