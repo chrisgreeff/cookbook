@@ -35,7 +35,7 @@ YUI.add('cb-card-list', function (Y) {
     }, {
 
         ATTRS: {
-            mode: {}
+
         }
 
     });

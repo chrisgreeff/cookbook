@@ -66,10 +66,7 @@ YUI.add('cb-card-list-view', function (Y) {
 
             cardList.after(['add', 'remove', 'reset'], this.render, this);
 
-            container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
-            container.delegate('click', this._toggleCheckbox, '.' + CLASS_NAMES.cardCheckbox, this);
-            container.delegate('paste', this._pasteAsPlainText, '.' + CLASS_NAMES.card, this);
-            Y.one(window).on('keydown', this._createNewNote, this);
+            this._attachViewModeEventHandlers();
         },
 
         render: function () {
@@ -81,64 +78,143 @@ YUI.add('cb-card-list-view', function (Y) {
             return this;
         },
 
-        // ================ PRIVATE FUNCTIONS ===============
+        // ================================================================================
+        // ============================== PRIVATE FUNCTIONS ===============================
+        // ================================================================================
 
+        /**
+         * Attaches all event handlers necessary for view mode to be active
+         *
+         * @private
+         * @method _attachViewModeEventHandlers
+         */
+        _attachViewModeEventHandlers: function () {
+            var container = this.get('container');
+
+            container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
+            container.delegate('click', this._toggleCheckbox, '.' + CLASS_NAMES.cardCheckbox, this);
+            Y.one(window).on('keydown', this._switchNewNoteCardToEditMode, this);
+        },
+
+        /**
+         * Detaches all custom event handlers for view mode
+         *
+         * @private
+         * @method _detachViewModeEventHandlers
+         */
+        _detachViewModeEventHandlers: function () {
+            this.get('container').detach('click');
+            Y.one(window).detach('keydown', this._switchNewNoteCardToEditMode);
+        },
+
+        /**
+         * Attaches all event handlers necessary for edit mode to be active
+         *
+         * @private
+         * @method _attachEditModeEventHandlers
+         */
+        _attachEditModeEventHandlers: function () {
+            var activeCardNode = this.get('activeCardNode');
+
+            activeCardNode.after('clickoutside', this._switchToViewMode, this);
+            activeCardNode.after('keydown', this._keydownStrokeListener, this);
+            activeCardNode.after('paste', this._pasteAsPlainText, this);
+        },
+
+        /**
+         * Detaches all custom event handlers for edit mode
+         *
+         * @private
+         * @method _detachEditModeEventHandlers
+         */
+        _detachEditModeEventHandlers: function () {
+            var activeCardNode = this.get('activeCardNode');
+
+            activeCardNode.detach('clickoutside');
+            activeCardNode.detach('keydown', this._keydownStrokeListener);
+            activeCardNode.detach('paste');
+        },
+
+        /**
+         * Converts the passed card node into an edit field.
+         *
+         * @private
+         * @method _switchToEditMode
+         * @param  {Node} cardNode The card to switch to edit mode
+         */
         _switchToEditMode: function (cardNode) {
-            var cardList = this.get('modelList');
-
             this.get('modelList').set('mode', 'edit');
             this.set('activeCardNode', cardNode);
-            this.get('container').detach('click');
 
+            // If there is no id set on the card node, clear the placeholder text.
             if (!cardNode.getData('id')) {
                 cardNode.empty();
             }
+
+            this._detachViewModeEventHandlers();
+            this._attachEditModeEventHandlers();
+
+            // Enhance the card node for editing
             cardNode.addClass(CLASS_NAMES.cardEditing);
-            cardNode.after('clickoutside', this._switchToViewMode, this);
-            cardNode.after('keydown', this._keydownStrokeListener, this);
-
-            // Turn into wysiwyg edit field.
             $(cardNode.getDOMNode()).wysiwyg();
-
-            this.set('mode', 'edit');
-            Y.one(window).detach('keydown', this._createNewNote);
-
             cardNode.focus();
         },
 
+        /**
+         * Handles any tasks needed to be done before setting the app back to view mode.
+         *
+         * @private
+         * @method _switchToViewMode
+         */
         _switchToViewMode: function () {
-            var container             = this.get('container'),
-                activeCardNode        = this.get('activeCardNode'),
-                cardList              = this.get('modelList'),
+            var container = this.get('container'),
+                activeCardNode = this.get('activeCardNode'),
+                cardList = this.get('modelList'),
                 activeCardNodeContent = activeCardNode.getHTML(),
-                cardId                = activeCardNode.getData('id'),
+                activeCardNodeText = activeCardNode.get('text'),
+                cardId = activeCardNode.getData('id'),
+                addition = false,
                 card;
 
-            if (!cardId && activeCardNodeContent) {
+            // New card with non-html content. Create and save model.
+            if (!cardId && activeCardNodeText) {
                 this._createAndSaveCard(activeCardNodeContent);
+                addition = true;
+
+            // Existing card.
             } else if (cardId) {
                 card = cardList.getById(cardId);
 
+                // Update card only if the content has changed.
                 if (activeCardNodeContent !== card.get('content')) {
-                    if (activeCardNodeContent || confirm('Bro are you sure...?')) {
+                    // If there is no text for an existing card, confirm before deletion.
+                    if (activeCardNodeText || confirm('Bro are you sure...?')) {
                         cardList.updateCardContent(card, activeCardNodeContent);
+                        addition = true;
                     }
                 }
             }
 
+            this._detachEditModeEventHandlers();
+            this._attachViewModeEventHandlers();
+
             activeCardNode.removeClass(CLASS_NAMES.cardEditing);
-            activeCardNode.detach('clickoutside');
 
-            container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
-            container.delegate('click', this._toggleCheckbox, '.' + CLASS_NAMES.cardCheckbox, this);
-            Y.one(window).on('keydown', this._createNewNote, this);
-
-            this.set('mode', 'view');
             this.set('activeCardNode', null);
 
-            this._sortCardList();
+            // Sort list on addition of new card
+            if (addition) {
+                this._sortCardList();
+            }
         },
 
+        /**
+         * Creates and saves the new card to the model list.
+         *
+         * @private
+         * @method _createAndSaveCard
+         * @param  {String} cardContent The content to save to the card model
+         */
         _createAndSaveCard: function (cardContent) {
             var modelList = this.get('modelList'),
                 now       = Date.now();
@@ -149,26 +225,48 @@ YUI.add('cb-card-list-view', function (Y) {
                 dateLastEdited: now,
                 dateCreated: now
             }), {
+                // Re-render is done as a part of sorting the model list.
                 silent: true
             });
         },
 
-        // Ensuring the last edited card is first in the list when rendered
+        /**
+         * Ensures the last edited card is at the top of the list when rendered.
+         *
+         * @private
+         * @method _sortCardList
+         */
         _sortCardList: function () {
             this.get('modelList').sort({
                 decending: true
             });
         },
 
-        // ================= EVENT HANDLERS =================
+        // ================================================================================
+        // ================================ EVENT HANDLERS ================================
+        // ================================================================================
 
-        _createNewNote: function (event) {
+        /**
+         * Switches the new note card to edit mode.
+         *
+         * @private
+         * @method _switchNewNoteCardToEditMode
+         * @param  {Event} click or keyboard event
+         */
+        _switchNewNoteCardToEditMode: function (event) {
             if (event.keyCode === KEY_CODES.n && event.shiftKey) {
                 event.preventDefault();
                 this._switchToEditMode(Y.one('.' + CLASS_NAMES.newCard));
             }
         },
 
+        /**
+         * Determines which card node was clicked for edit
+         *
+         * @eventHandler
+         * @method _getCardForEditMode
+         * @param  {Event} click event
+         */
         _getCardForEditMode: function (event) {
             var targetNode = event.target,
                 cardClass = CLASS_NAMES.card,
@@ -177,25 +275,41 @@ YUI.add('cb-card-list-view', function (Y) {
             this._switchToEditMode(cardNode);
         },
 
+        /**
+         * Toggles the state of the checkbox
+         *
+         * @eventHandler
+         * @method _toggleCheckbox
+         * @param  {Event} click event
+         */
         _toggleCheckbox: function (event) {
             var checkboxNode = event.target;
 
-            if (checkboxNode.hasClass(CLASS_NAMES.iconUnchecked)) {
-                checkboxNode.removeClass(CLASS_NAMES.iconUnchecked);
-                checkboxNode.addClass(CLASS_NAMES.iconChecked);
-            } else {
-                checkboxNode.removeClass(CLASS_NAMES.iconChecked);
-                checkboxNode.addClass(CLASS_NAMES.iconUnchecked);
-            }
+            event.preventDefault();
 
-            this._switchToViewMode();
+            checkboxNode.toggleClass(CLASS_NAMES.iconUnchecked);
+            checkboxNode.toggleClass(CLASS_NAMES.iconChecked);
         },
 
+        /**
+         * Pastes any clipboard selection as plain text to avoid any unintended weirdness in formatting.
+         *
+         * @eventHandler
+         * @method _pasteAsPlainText
+         * @param  {Event} paste event
+         */
         _pasteAsPlainText: function (event) {
             event.preventDefault();
             document.execCommand('insertHTML', false, event._event.clipboardData.getData('text/plain'));
         },
 
+        /**
+         * Manages the keydown strokes during the editing of a card.
+         *
+         * @eventHandler
+         * @method _keydownStrokeListener
+         * @param  {Event} keydown event
+         */
         _keydownStrokeListener: function (event) {
             var keyCode = event.keyCode,
                 textCursorPosition = window.getSelection().extentOffset,
@@ -203,6 +317,7 @@ YUI.add('cb-card-list-view', function (Y) {
                 oldContent,
                 cardId;
 
+            // Escape cancels the edit.
             if (keyCode === KEY_CODES.escape) {
                 activeCardNode = this.get('activeCardNode');
                 cardId         = activeCardNode.getData('id');
@@ -217,15 +332,18 @@ YUI.add('cb-card-list-view', function (Y) {
                 this._switchToViewMode();
             }
 
+            // Shift + Enter saves the note if there are changes.
             if (keyCode === KEY_CODES.enter && event.shiftKey) {
                 event.preventDefault();
                 this._switchToViewMode();
             }
 
+            // Store the first char for todo and note insertion.
             if (textCursorPosition === 0) {
                 this.set('firstChar', keyCode);
             }
 
+            // Enhance the character into todo or note list items.
             if (keyCode === KEY_CODES.space && textCursorPosition === 1) {
                 if (firstChar === KEY_CODES.dash) {
                     event.preventDefault();
@@ -246,10 +364,6 @@ YUI.add('cb-card-list-view', function (Y) {
     }, {
 
         ATTRS: {
-            mode: {
-                value: 'view'
-            },
-
             activeCardNode: {
                 value: null
             },
