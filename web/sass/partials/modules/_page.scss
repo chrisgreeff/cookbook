@@ -1,0 +1,18 @@
+.cb-main-header {
+    padding-left: $page-header-padding-left;
+    padding-top: $page-header-padding-top;
+    text-transform: uppercase;
+}
+
+.cb-heading-icon-file {
+    color: $page-header-file-icon-text-color;
+    padding-left: $page-header-file-icon-padding-left;
+    padding-right: $page-header-file-icon-padding-right;
+    position: relative;
+    top: 2px;
+}
+
+.cb-heading-icon-file:before {
+    content: "\e600";
+    @extend .cb-icomoon-font;
+}

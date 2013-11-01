@@ -1,0 +1,22 @@
+#{headings()} {
+    font-family: 'kelson_sansregular', Arial, sans-serif;
+    margin: 0;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font: {
+        family: 'roboto', Arial, sans-serif;
+        size: $regular-font-size;
+    }
+    font-smoothing: antialiased;
+    line-height: $regular-line-height;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}

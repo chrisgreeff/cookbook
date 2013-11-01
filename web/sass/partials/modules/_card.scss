@@ -1,0 +1,73 @@
+.cb-card-list {
+    padding: 0;
+    margin: 0;
+}
+
+.cb-card-container {
+    list-style-type: none;
+}
+
+.cb-card {
+    background-color: $card-background-color;
+    font-weight: $card-font-weight;
+    margin-bottom: $card-margin-bottom;
+    padding: $card-vertical-padding $card-horizontal-padding;
+    word-wrap: break-word;
+    
+    &:focus {
+        outline: solid 1px $card-outline-focus-color;
+    }
+}
+
+.cb-card-new {
+    color: $card-new-text-color;
+    padding: $card-new-vertical-padding $card-horizontal-padding;
+}
+
+.cb-card-editing {
+    color: $card-editing-text-color;
+    box-shadow: $card-editing-box-shadow;
+}
+
+.cb-card-note {
+    list-style-type: disc;
+    padding-left: $card-note-padding-left;
+
+    ul {
+        list-style-type: circle;
+    }
+}
+
+.cb-card-todo {
+    list-style-type: none;
+    padding-left: $card-todo-padding-left;
+
+    ol {
+        list-style-type: none;
+    }
+}
+
+.cb-card-todo--checkbox-common:before {
+    display: inline-block;
+    margin-top: $card-todo-checkbox-margin-top;
+    margin-right: $card-todo-checkbox-margin-right;
+}
+
+.cb-card-todo--icon-checkbox-unchecked {
+    @extend .cb-card-todo--checkbox-common;
+
+    &:before {
+        content: "\e601";
+        @extend .cb-icomoon-font;
+    }
+}
+
+.cb-card-todo--icon-checkbox-checked {
+    color: $card-todo-checkbox-checked-color;
+    @extend .cb-card-todo--checkbox-common;
+
+    &:before {
+        content: "\e602";
+        @extend .cb-icomoon-font;
+    }
+}

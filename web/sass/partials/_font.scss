@@ -1,0 +1,33 @@
+@font-face {
+    font-family: 'kelson_sansregular';
+    src: url('../fonts/kelson_sans_regular-webfont.eot');
+    src: url('../fonts/kelson_sans_regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/kelson_sans_regular-webfont.woff') format('woff'),
+         url('../fonts/kelson_sans_regular-webfont.ttf') format('truetype'),
+         url('../fonts/kelson_sans_regular-webfont.svg#kelson_sansregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'icomoon';
+    src:url('../fonts/icomoon.eot');
+    src:url('../fonts/icomoon.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/icomoon.ttf') format('truetype'),
+        url('../fonts/icomoon.woff') format('woff'),
+        url('../fonts/icomoon.svg#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.cb-icomoon-font {
+    font-family: 'icomoon';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

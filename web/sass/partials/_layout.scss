@@ -1,0 +1,12 @@
+#header {
+    background-color: $page-header-background-color;
+    color: $page-header-text-color;
+    height: $page-header-height;
+    width: 100%;
+}
+
+#main {
+    background-color: $page-main-background-color;
+    padding: $page-main-vertical-padding $page-main-horizontal-padding;
+    height: 100%;
+}

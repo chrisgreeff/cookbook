@@ -1,0 +1,50 @@
+// ----------------------------------------------------------
+// ========================== Page ==========================
+// ----------------------------------------------------------
+
+// Display Box Model
+$page-header-height: 40px;
+$page-header-padding-top: 4px;
+$page-header-padding-left: 10px;
+$page-header-file-icon-padding-left: 6px;
+$page-header-file-icon-padding-right: 6px;
+$page-main-vertical-padding: 20px;
+$page-main-horizontal-padding: 40px;
+
+// Typography
+$regular-font-size: 16px;
+$regular-line-height: 1.3em;
+
+// Colours
+$page-header-background-color: #272822;
+$page-header-text-color: #FFF;
+$page-header-file-icon-text-color: #F5276F;
+$page-main-background-color: #F1F1F1;
+
+
+// ----------------------------------------------------------
+// ========================== Card ==========================
+// ----------------------------------------------------------
+
+// Display Box Model
+$card-horizontal-padding: 30px;
+$card-vertical-padding: 30px;
+$card-margin-bottom: 20px;
+$card-new-vertical-padding: 15px;
+$card-note-padding-left: 30px;
+$card-todo-padding-left: 7px;
+$card-todo-checkbox-margin-top: 0;
+$card-todo-checkbox-margin-right: 7px;
+
+// Typography
+$card-font-weight: 300;
+
+// Colours
+$card-background-color: #FFF;
+$card-outline-focus-color: #F92770;
+$card-new-text-color: #BEBEBE;
+$card-editing-text-color: #000000;
+$card-todo-checkbox-checked-color: #BEBEBE;
+
+// Shadow
+$card-editing-box-shadow: 0px 0px 10px #EEEEEE;

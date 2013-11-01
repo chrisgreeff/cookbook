@@ -13,12 +13,12 @@ YUI.add('cb-card-list-view', function (Y) {
             card: 'cb-card',
             cardContainer: 'cb-card-container',
             cardEditing: 'cb-card-editing',
-            cardCheckbox: 'cb-card-checkbox',
+            cardTodoCheckbox: 'cb-card-todo--checkbox',
             cardNote: 'cb-card-note',
             cardTodo: 'cb-card-todo',
-            newCard: 'cb-new-card',
-            iconUnchecked: 'icon-checkbox-unchecked',
-            iconChecked: 'icon-checkbox-checked'
+            newCard: 'cb-card-new',
+            iconUnchecked: 'cb-card-todo--icon-checkbox-unchecked',
+            iconChecked: 'cb-card-todo--icon-checkbox-checked'
         },
 
         KEY_CODES = {
@@ -54,7 +54,7 @@ YUI.add('cb-card-list-view', function (Y) {
 
     _renderTodoListItem = Micro.compile(
         '<ol class="' + CLASS_NAMES.cardTodo + '">' +
-            '<li class="' + CLASS_NAMES.iconUnchecked + ' ' + CLASS_NAMES.cardCheckbox + '">&nbsp;</li>' +
+            '<li class="' + CLASS_NAMES.iconUnchecked + ' ' + CLASS_NAMES.cardTodoCheckbox + '">&nbsp;</li>' +
         '</ol>'
     );
 
@@ -91,8 +91,8 @@ YUI.add('cb-card-list-view', function (Y) {
         _attachViewModeEventHandlers: function () {
             var container = this.get('container');
 
+            container.delegate('mousedown', this._toggleCheckbox, '.' + CLASS_NAMES.cardTodoCheckbox, this);
             container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
-            container.delegate('click', this._toggleCheckbox, '.' + CLASS_NAMES.cardCheckbox, this);
             Y.one(window).on('keydown', this._switchNewNoteCardToEditMode, this);
         },
 
@@ -144,6 +144,7 @@ YUI.add('cb-card-list-view', function (Y) {
          */
         _switchToEditMode: function (cardNode) {
             this.get('modelList').set('mode', 'edit');
+
             this.set('activeCardNode', cardNode);
 
             // If there is no id set on the card node, clear the placeholder text.
@@ -168,8 +169,8 @@ YUI.add('cb-card-list-view', function (Y) {
          */
         _switchToViewMode: function () {
             var container = this.get('container'),
-                activeCardNode = this.get('activeCardNode'),
                 cardList = this.get('modelList'),
+                activeCardNode = this.get('activeCardNode'),
                 activeCardNodeContent = activeCardNode.getHTML(),
                 activeCardNodeText = activeCardNode.get('text'),
                 cardId = activeCardNode.getData('id'),
@@ -270,7 +271,11 @@ YUI.add('cb-card-list-view', function (Y) {
         _getCardForEditMode: function (event) {
             var targetNode = event.target,
                 cardClass = CLASS_NAMES.card,
+                cardNode = null;
+
+            if (!targetNode.hasClass(CLASS_NAMES.cardTodoCheckbox)) {
                 cardNode = targetNode.hasClass(cardClass) ? targetNode : targetNode.ancestor('.' + cardClass);
+            }
 
             this._switchToEditMode(cardNode);
         },
@@ -285,10 +290,12 @@ YUI.add('cb-card-list-view', function (Y) {
         _toggleCheckbox: function (event) {
             var checkboxNode = event.target;
 
-            event.preventDefault();
-
             checkboxNode.toggleClass(CLASS_NAMES.iconUnchecked);
             checkboxNode.toggleClass(CLASS_NAMES.iconChecked);
+
+            // This is to prevent the checkbox from toggling twice, as the event bubbles from the card container,
+            // and fires twice.
+            event.stopImmediatePropagation();
         },
 
         /**

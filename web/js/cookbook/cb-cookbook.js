@@ -1,10 +1,10 @@
 /*global YUI*/
-YUI.add('cb-cookbook'`function (Y) {
+YUI.add('cb-cookbook', function (Y) {
     'use strict';
 
     var Lang = Y.Lang,
         CardList = Y.CB.CardList,
-        CardListView =- Y.CB.CardListView;
+        CardListView = Y.CB.CardListView;
 
     Y.namespace('CB').Cookbook = Y.Base.create('cb-cookbook', Y.Model, [], {
         initializer: function () {
