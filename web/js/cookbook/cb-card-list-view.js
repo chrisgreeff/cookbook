@@ -364,10 +364,22 @@ YUI.add('cb-card-list-view', function (Y) {
     }, {
 
         ATTRS: {
+            /**
+             * The card node of the card being edited.
+             *
+             * @attribute activeCardNode
+             * @type {Node}
+             */
             activeCardNode: {
                 value: null
             },
 
+            /**
+             * The first character of the line being edited
+             *
+             * @attribute firstChar
+             * @type {String}
+             */
             firstChar: {
                 value: null
             }

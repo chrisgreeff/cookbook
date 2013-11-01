@@ -1,9 +1,10 @@
 /*global YUI*/
-YUI.add('cb-cookbook', function (Y) {
+YUI.add('cb-cookbook'`function (Y) {
     'use strict';
 
     var Lang = Y.Lang,
-        CardList = Y.CB.CardList;
+        CardList = Y.CB.CardList,
+        CardListView =- Y.CB.CardListView;
 
     Y.namespace('CB').Cookbook = Y.Base.create('cb-cookbook', Y.Model, [], {
         initializer: function () {
@@ -11,9 +12,11 @@ YUI.add('cb-cookbook', function (Y) {
                 cardListView;
 
             // Create Model List
-            cardList = new Y.CB.CardList();
+            // @todo this will need to be retrieved and build from a database (local storage).
+            cardList = new CardList();
 
-            cardListView = new Y.CB.CardListView({
+            // Build the view with the card list restrieved.
+            cardListView = new CardListView({
                 modelList: cardList,
                 container: Y.one('.cb-card-list')
             });
@@ -29,6 +32,8 @@ YUI.add('cb-cookbook', function (Y) {
 
                     cards = this.get('cards');
 
+                    // If the value passed is already an instance of CardList, destroy the existing and use the
+                    // one passed.
                     if (value instanceof CardList) {
                         if (cards) {
                             cards.destroy();
@@ -36,6 +41,7 @@ YUI.add('cb-cookbook', function (Y) {
                         return value;
                     }
 
+                    // Otherwise reset the CardList with the values passed.
                     if (Lang.isObject(value)) {
                         result = cards || new CardList();
                         result.reset(value);
@@ -52,4 +58,12 @@ YUI.add('cb-cookbook', function (Y) {
         }
     });
 
-}, '1.0.0', { requires: ['base', 'model', 'node-base', 'cb-card', 'cb-card-list', 'cb-card-list-view'] });
+}, '1.0.0', {
+    requires: [
+        'base',
+        'model',
+        'cb-card',
+        'cb-card-list',
+        'cb-card-list-view'
+    ]
+});

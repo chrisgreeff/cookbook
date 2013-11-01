@@ -3,9 +3,15 @@ YUI.add('cb-card-list', function (Y) {
     'use strict';
 
     Y.namespace('CB').CardList = Y.Base.create('cb-card-list', Y.ModelList, [], {
-
         model: Y.CB.Card,
 
+        /**
+         * Updates the card's content with that passed.
+         *
+         * @method updateCardContent
+         * @param  {Model} card The card to update.
+         * @param  {HTML | String} content The content you are updated the card with
+         */
         updateCardContent: function (card, content) {
             var index = this.indexOf(card);
 
@@ -24,8 +30,9 @@ YUI.add('cb-card-list', function (Y) {
             }
         },
 
+        // Sorting by dateLastEdited when modelList.sort() is called.
         comparator: function (model) {
-            return model.get('dateCreated');
+            return model.get('dateLastEdited');
         },
 
         _compare: function (a, b) {
@@ -40,4 +47,10 @@ YUI.add('cb-card-list', function (Y) {
 
     });
 
-}, '1.0.0', { requires: ['base', 'model-list', 'cb-card'] });
+}, '1.0.0', {
+    requires: [
+        'base',
+        'model-list',
+        'cb-card'
+    ]
+});
