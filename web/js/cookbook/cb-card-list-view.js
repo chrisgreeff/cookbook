@@ -177,9 +177,13 @@ YUI.add('cb-card-list-view', function (Y) {
                 card;
 
             // New card with non-html content. Create and save model.
-            if (!cardId && activeCardNodeText) {
-                this._createAndSaveCard(activeCardNodeContent);
-                addition = true;
+            if (!cardId) {
+                if (activeCardNodeText) {
+                    this._createAndSaveCard(activeCardNodeContent);
+                    addition = true;
+                } else {
+                    // @todo destroy wysiwyg node, and re-create new card node.
+                }
 
             // Existing card.
             } else if (cardId) {
