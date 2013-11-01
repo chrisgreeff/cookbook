@@ -144,7 +144,6 @@ YUI.add('cb-card-list-view', function (Y) {
          */
         _switchToEditMode: function (cardNode) {
             this.get('modelList').set('mode', 'edit');
-
             this.set('activeCardNode', cardNode);
 
             // If there is no id set on the card node, clear the placeholder text.
