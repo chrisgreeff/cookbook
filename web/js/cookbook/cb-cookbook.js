@@ -14,7 +14,7 @@ YUI.add('cb-cookbook', function (Y) {
             // Build the view with the card list restrieved.
             walletListView = new WalletListView({
                 modelList: this.get('wallets'),
-                container: Y.one('.cb-wallet-container')
+                container: Y.one('.cb-wallet-list-container')
             });
 
             walletListView.render();
