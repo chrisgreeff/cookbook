@@ -32,6 +32,8 @@ YUI.add('cb-wallet-list-view', function (Y) {
 
         initializer: function () {
             this.get('modelList').after(['add', 'remove', 'reset'], this.render, this);
+
+            Y.one(Y.config.win).on('keydown', this._activateNewCardNode, this);
         },
 
         render: function () {
@@ -77,6 +79,20 @@ YUI.add('cb-wallet-list-view', function (Y) {
         // ----------------------------------------------------------
         // ===================== Event Handlers =====================
         // ----------------------------------------------------------
+
+        /**
+         * Switches the new note card to edit mode.
+         *
+         * @private
+         * @method _activateNewCardNode
+         * @param  {Event} click or keyboard event
+         */
+        _activateNewCardNode: function (event) {
+            if (event.keyCode === KEY_CODES.n && event.shiftKey) {
+                event.preventDefault();
+                this._switchToEditMode(Y.one('.' + CLASS_NAMES.newCard));
+            }
+        }
 
     }, {
 

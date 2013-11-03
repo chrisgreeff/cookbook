@@ -71,10 +71,10 @@ YUI.add('cb-card-list-view', function (Y) {
          * @method _attachViewModeEventHandlers
          */
         _attachViewModeEventHandlers: function () {
-            var cardListNode = this.get('container').one('.' + CLASS_NAMES.cardList);
+            var container = this.get('container');
 
-            cardListNode.delegate('mousedown', this._toggleCheckbox, '.' + CLASS_NAMES.cardTodoCheckbox, this);
-            cardListNode.delegate('click', this._activateCardForEditing, '.' + CLASS_NAMES.card, this);
+            container.delegate('mousedown', this._toggleCheckbox, '.' + CLASS_NAMES.cardTodoCheckbox, this);
+            container.delegate('click', this._activateCardForEditing, '.' + CLASS_NAMES.card, this);
             Y.one(Y.config.win).on('keydown', this._switchNewNoteCardToEditMode, this);
         },
 
@@ -90,57 +90,6 @@ YUI.add('cb-card-list-view', function (Y) {
             container.detach('click');
             container.detach('mousedown');
             Y.one(Y.config.win).detach('keydown', this._switchNewNoteCardToEditMode);
-        },
-
-        /**
-         * Handles any tasks needed to be done before setting the app back to view mode.
-         *
-         * @private
-         * @method _switchToViewMode
-         */
-        _switchToViewMode: function () {
-            var cardList = this.get('modelList'),
-                activeCardNode = this.get('activeCardNode'),
-                activeCardNodeContent = activeCardNode.getHTML(),
-                activeCardNodeText = activeCardNode.get('text'),
-                cardId = activeCardNode.getData('id'),
-                addition = false,
-                card;
-
-            // New card with non-html content. Create and save model.
-            if (!cardId) {
-                if (activeCardNodeText) {
-                    this._createAndSaveCard(activeCardNodeContent);
-                    addition = true;
-                } else {
-                    // @todo destroy wysiwyg node, and re-create new card node.
-                }
-
-            // Existing card.
-            } else if (cardId) {
-                card = cardList.getById(cardId);
-
-                // Update card only if the content has changed.
-                if (activeCardNodeContent !== card.get('content')) {
-                    // If there is no text for an existing card, confirm before deletion.
-                    if (activeCardNodeText || confirm('Bro are you sure...?')) {
-                        cardList.updateCardContent(card, activeCardNodeContent);
-                        addition = true;
-                    }
-                }
-            }
-
-            this._detachEditModeEventHandlers();
-            this._attachViewModeEventHandlers();
-
-            activeCardNode.removeClass(CLASS_NAMES.cardActive);
-
-            this.set('activeCardNode', null);
-
-            // Sort list on addition of new card
-            if (addition) {
-                this._sortCardList();
-            }
         },
 
         /**
@@ -182,17 +131,28 @@ YUI.add('cb-card-list-view', function (Y) {
         // ----------------------------------------------------------
 
         /**
-         * Switches the new note card to edit mode.
+         * Determines which card node was clicked for edit
          *
-         * @private
-         * @method _switchNewNoteCardToEditMode
-         * @param  {Event} click or keyboard event
+         * @eventHandler
+         * @method _activateCardForEditing
+         * @param  {Event} click event
          */
-        _switchNewNoteCardToEditMode: function (event) {
-            if (event.keyCode === KEY_CODES.n && event.shiftKey) {
-                event.preventDefault();
-                this._switchToEditMode(Y.one('.' + CLASS_NAMES.newCard));
+        _activateCardForEditing: function (event) {
+            var targetNode = event.target,
+                cardContainerClass = CLASS_NAMES.cardContainer,
+                cardContainerNode,
+                cardId,
+                card;
+
+            this._detachViewModeEventHandlers();
+
+            if (!targetNode.hasClass(CLASS_NAMES.cardTodoCheckbox)) {
+                cardContainerNode = targetNode.hasClass(cardContainerClass) ? targetNode : targetNode.ancestor('.' + cardContainerClass);
             }
+
+            cardId = cardContainerNode.getData('id');
+            card = this.get('modelList').getById(cardId);
+            card.set('active', true);
         },
 
         /**
