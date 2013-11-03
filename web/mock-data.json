@@ -1,0 +1,14 @@
+{
+    "wallets": [
+        {
+            "cards": [
+                {
+                    "content": "My first card",
+                    "dateLastEdited": "Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)",
+                    "dateCreated": "Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)"
+                }
+            ],
+            "date": "Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)"
+        }
+    ]
+}

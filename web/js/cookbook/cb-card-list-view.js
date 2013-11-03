@@ -32,18 +32,11 @@ YUI.add('cb-card-list-view', function (Y) {
         };
 
     _renderCardList = Micro.compile(
-        '<li class="' + CLASS_NAMES.cardContainer + '">' +
-            '<div class="' + CLASS_NAMES.card + ' ' + CLASS_NAMES.newCard + '">' +
-                'New Card' +
-            '</div>' +
-        '</li>' +
-        '<% Y.Array.each(this.cards, function(card) { %>' +
-            '<li class="' + CLASS_NAMES.cardContainer + '">' +
-                '<div tabindex="0" class="' + CLASS_NAMES.card + '" data-id="<%= card.id %>">' +
-                    '<%== card.content %>' +
-                '</div>' +
-            '</li>' +
-        '<% }); %>'
+        '<ul class="cb-card-list">' +
+            '<% Y.Array.each(this.cards, function(card) { %>' +
+                '<li class="' + CLASS_NAMES.cardContainer + '"></li>' +
+            '<% }); %>' +
+        '</ul>'
     );
 
     _renderNoteListItem = Micro.compile(
@@ -61,18 +54,13 @@ YUI.add('cb-card-list-view', function (Y) {
     Y.namespace('CB').CardListView = Y.Base.create('cb-card-list-view', Y.View, [], {
 
         initializer: function () {
-            var cardList = this.get('modelList'),
-                container = this.get('container');
-
-            cardList.after(['add', 'remove', 'reset'], this.render, this);
-
+            this.get('modelList').after(['add', 'remove', 'reset'], this.render, this);
             this._attachViewModeEventHandlers();
         },
 
         render: function () {
             this.get('container').setHTML(_renderCardList({
-                cards: this.get('modelList').toJSON(),
-                CLASS_NAMES: CLASS_NAMES
+                cards: this.get('modelList').toJSON()
             }));
 
             return this;
@@ -167,8 +155,7 @@ YUI.add('cb-card-list-view', function (Y) {
          * @method _switchToViewMode
          */
         _switchToViewMode: function () {
-            var container = this.get('container'),
-                cardList = this.get('modelList'),
+            var cardList = this.get('modelList'),
                 activeCardNode = this.get('activeCardNode'),
                 activeCardNodeContent = activeCardNode.getHTML(),
                 activeCardNodeText = activeCardNode.get('text'),
@@ -221,7 +208,7 @@ YUI.add('cb-card-list-view', function (Y) {
          */
         _createAndSaveCard: function (cardContent) {
             var modelList = this.get('modelList'),
-                now       = Date.now();
+                now       = new Date();
 
             modelList.add(new Card({
                 id: Y.guid(),
@@ -324,6 +311,7 @@ YUI.add('cb-card-list-view', function (Y) {
             var keyCode = event.keyCode,
                 textCursorPosition = window.getSelection().extentOffset,
                 firstChar = this.get('firstChar'),
+                activeCardNode,
                 oldContent,
                 cardId;
 
