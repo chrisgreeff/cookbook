@@ -29,7 +29,6 @@ YUI.add('cb-wallet-list-view', function (Y) {
         '</ul>'
     );
 
-
     Y.namespace('CB').WalletListView = Y.Base.create('cb-wallet-list-view', Y.View, [], {
 
         initializer: function () {
@@ -38,26 +37,23 @@ YUI.add('cb-wallet-list-view', function (Y) {
 
         render: function () {
             var container = this.get('container'),
-                walletList = this.get('modelList'),
-                walletListNode;
+                walletList = this.get('modelList');
 
             container.setHTML(_renderWalletList({
                 wallets: walletList.toJSON()
             }));
 
             walletList.each(function (wallet) {
-                var cardContainer = container.one('li[data-date="' + wallet.get('date') + '"]'),
+                var walletContainer = container.one('li[data-date="' + wallet.get('date') + '"]'),
                     cardListView;
 
                 cardListView = new CardListView({
                     modelList: wallet.get('cards'),
-                    container: cardContainer
+                    container: walletContainer
                 });
 
                 cardListView.render();
             });
-
-            
 
             return this;
         }

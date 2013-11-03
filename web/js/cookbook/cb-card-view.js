@@ -8,8 +8,8 @@ YUI.add('cb-card-view', function (Y) {
         _renderCard;
 
     _renderCard = Micro.compile(
-        '<div tabindex="0" class="' + CLASS_NAMES.card + '" data-id="<%= card.id %>">' +
-            '<%== card.content %>' +
+        '<div tabindex="0" class="' + CLASS_NAMES.card + '">' +
+            '<%== this.content %>' +
         '</div>' +
     );
 

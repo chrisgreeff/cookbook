@@ -34,7 +34,7 @@ YUI.add('cb-card-list-view', function (Y) {
     _renderCardList = Micro.compile(
         '<ul class="cb-card-list">' +
             '<% Y.Array.each(this.cards, function(card) { %>' +
-                '<li class="' + CLASS_NAMES.cardContainer + '"></li>' +
+                '<li class="' + CLASS_NAMES.cardContainer + '" data-id="<%= card.id %>"></li>' +
             '<% }); %>' +
         '</ul>'
     );
@@ -59,6 +59,25 @@ YUI.add('cb-card-list-view', function (Y) {
         },
 
         render: function () {
+            var container = this.get('container'),
+                cardList = this.get('modelList');
+
+            container.setHTML(_renderCardList({
+                cards: cardList.toJSON()
+            }));
+
+            cardList.each(function (card) {
+                var cardContainer = container.one('li[data-date="' + card.get('id') + '"]'),
+                    cardListView;
+
+                cardListView = new CardListView({
+                    modelList: card.get('cards'),
+                    container: cardContainer
+                });
+
+                cardListView.render();
+            });
+
             this.get('container').setHTML(_renderCardList({
                 cards: this.get('modelList').toJSON()
             }));
