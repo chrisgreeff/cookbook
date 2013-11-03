@@ -1,42 +1,42 @@
-#cb-tutorial-banner {
-    width: 85px;
-    height: 27px;
-    border-bottom-right-radius: 10px;
-    font-family: 'roboto', Arial, sans-serif; 
-    color: #999999;
-    font-size: 11px;
-    background: #FFFFC2;
-    display: block;
-    position: relative;
+.cb-shortcut-banner {
+    line-height: 30px;
+    width: 49px;
+    height: 30px;
+    padding-left: $shortcut-padding-left;
+    color: $shortcut-text-color;
+    font-size: $shortcut-font-size;
+    background-color: $shortcut-background-color;
     overflow: hidden;
     transition-duration: 0.5s;
+    &:hover {
+        width: 100%;
+        box-shadow: $shortcut-box-shadow;
+        overflow: hidden;
+    }
 }
 
-#cb-tutorial-banner:hover {
-    width: 100%;
-    font-family: 'roboto', Arial, sans-serif; 
-    color: #999999;
-    font-size: 11px;
-    background: #FFFFC2;
-    display: block;
-    position: relative;
-    box-shadow: 0px 0px 5px #BEBEBE;
-    overflow: hidden;
-}
-
-.cb-tutorial {
-    width: 100%;
+.cb-shortcut {
+    margin: 0px 6px;
     display: inline;
-    margin-left: 6px;
-    margin-right: 6px;
-    line-height: 2.5;
+    vertical-align: middle;
 }
 
-.cb-tutorial-button {
+.cb-shortcut-button {
     border-style: solid;
     border-width: 1px;
-    position: inline;
     padding: 2px;
     margin-right: 5px;
     border-radius: 5px;
+    vertical-align: middle;
+    color: $shortcut-button-text-color;
+}
+
+.cb-shortcut-logo {
+    font-family: 'icomoon';
+    &:before {content:"\e601";}
+    font-size: 1.5em;
+    display: inline;
+    vertical-align: middle;
+    padding-left: 12px;
+
 }

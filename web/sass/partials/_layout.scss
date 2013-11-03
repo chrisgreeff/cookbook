@@ -7,6 +7,6 @@
 
 #main {
     background-color: $page-main-background-color;
-    padding: $page-main-vertical-padding $page-main-horizontal-padding;
-    height: 100%;
+    padding:0;
+    min-height: 100%;
 }

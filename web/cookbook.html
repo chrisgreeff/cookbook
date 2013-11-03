@@ -17,28 +17,33 @@
         <header id="header">
             <h2 class="cb-main-header"><span class="cb-heading-icon-file"></span>Cookbook</h2>
         </header>
-        <div id="cb-tutorial-banner">
-            <div class="cb-tutorial">
-            <span class="cb-tutorial-exp">SHORTCUTS:</span>
-            </div>
-            <div class="cb-tutorial">
-            <span class="cb-tutorial-button">Shift + N</span><span class="cb-tutorial-exp">= New card</span>
-            </div>
-            <div class="cb-tutorial">
-            <span class="cb-tutorial-button">Shift + Enter</span><span class="cb-tutorial-exp">= Finish Edit</span>
-            </div>
-            <div class="cb-tutorial">
-            <span class="cb-tutorial-button">"=" and space</span><span class="cb-tutorial-exp">= Create ToDos</span>
-            </div>
-             <div class="cb-tutorial">
-            <span class="cb-tutorial-button">"-" and space</span><span class="cb-tutorial-exp">= Create Bullets</span>
-            </div>
-             <div class="cb-tutorial">
-            <span class="cb-tutorial-button">ESC</span><span class="cb-tutorial-exp">= Cancel</span>
-            </div>
-        </div>
         <div id="main">
-            <ul class="cb-card-list"></ul>
+            <div class="cb-shortcut-banner">
+                <div class="cb-shortcut-logo"></div>
+                <div class="cb-shortcut">
+                    <span class="cb-shortcut-button">Shift + N</span>
+                    <span class="cb-shortcut-exp">= New card</span>
+                </div>
+                <div class="cb-shortcut">
+                    <span class="cb-shortcut-button">Shift + Enter</span>
+                    <span class="cb-shortcut-exp">= Finish Edit</span>
+                </div>
+                <div class="cb-shortcut">
+                    <span class="cb-shortcut-button">"=" and space</span>
+                    <span class="cb-shortcut-exp">= Create ToDos</span>
+                </div>
+                 <div class="cb-shortcut">
+                    <span class="cb-shortcut-button">"-" and space</span>
+                    <span class="cb-shortcut-exp">= Create Bullets</span>
+                </div>
+                <div class="cb-shortcut">
+                    <span class="cb-shortcut-button">ESC</span>
+                    <span class="cb-shortcut-exp">= Cancel</span>
+                </div>
+            </div>
+            <div class="cb-card-list-container">
+                <ul class="cb-card-list"></ul>
+            </div>
         </div>
         <!--
             This is not the most ideal loading of modules. Should look into YUI module loader. Or even requirejs

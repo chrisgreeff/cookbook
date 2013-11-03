@@ -1,7 +1,11 @@
-.cb-card-list {
-    padding: 0;
+.cb-card-list-container {
+    padding: $card-list-container-vertical-padding $card-list-container-horizontal-padding;
     margin: 0;
 }
+
+.cb-card-list {
+    padding: 0;
+    margin: 0}
 
 .cb-card-container {
     list-style-type: none;
@@ -57,7 +61,7 @@
     @extend .cb-card-todo--checkbox-common;
 
     &:before {
-        content: "\e601";
+        content: "\e602";
         @extend .cb-icomoon-font;
     }
 }
@@ -67,7 +71,7 @@
     @extend .cb-card-todo--checkbox-common;
 
     &:before {
-        content: "\e602";
+        content: "\e603";
         @extend .cb-icomoon-font;
     }
 }
