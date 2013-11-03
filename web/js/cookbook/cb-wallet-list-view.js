@@ -3,8 +3,11 @@ YUI.add('cb-wallet-list-view', function (Y) {
     'use strict';
 
     var Micro = new Y.Template(),
-        Wallet  = Y.CB.Wallet,
-        CardListView = Y.CB.CardListView,
+        CB = Y.CB,
+        Card = CB.Card,
+        CardView = CB.CardView,
+        CardListView = CB.CardListView,
+        Wallet  = CB.Wallet,
 
         _renderWalletList,
 
@@ -18,11 +21,7 @@ YUI.add('cb-wallet-list-view', function (Y) {
 
     _renderWalletList = Micro.compile(
         '<ul class="' + CLASS_NAMES.walletList + '">' +
-            '<li class="' + CLASS_NAMES.cardContainer + '">' +
-                '<div class="' + CLASS_NAMES.card + ' ' + CLASS_NAMES.newCard + '">' +
-                    'New Card' +
-                '</div>' +
-            '</li>' +
+            '<li class="' + CLASS_NAMES.cardContainer + '"></li>' +
             '<% Y.Array.each(this.wallets, function(wallet) { %>' +
                 '<li class="' + CLASS_NAMES.wallet + '" data-date="<%= wallet.date %>"></li>' +
             '<% }); %>' +
@@ -37,12 +36,25 @@ YUI.add('cb-wallet-list-view', function (Y) {
 
         render: function () {
             var container = this.get('container'),
-                walletList = this.get('modelList');
+                walletList = this.get('modelList'),
+                newCardView;
 
             container.setHTML(_renderWalletList({
                 wallets: walletList.toJSON()
             }));
 
+            // Create and render the new card view.
+            newCardView = new CardView({
+                model: new Card({
+                    content: 'New Card',
+                    type: 'new'
+                }),
+                container: container.one('.' + CLASS_NAMES.cardContainer)
+            });
+
+            newCardView.render();
+
+            // Create and render the card list view for each wallet
             walletList.each(function (wallet) {
                 var walletContainer = container.one('li[data-date="' + wallet.get('date') + '"]'),
                     cardListView;
@@ -79,6 +91,9 @@ YUI.add('cb-wallet-list-view', function (Y) {
         'base',
         'view',
         'template',
+        'cb-card',
+        'cb-card-view',
+        'cb-card-list-view',
         'cb-wallet'
     ]
 });

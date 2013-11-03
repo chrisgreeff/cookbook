@@ -7,56 +7,32 @@ YUI.add('cb-card-list-view', function (Y) {
         CardView = Y.CB.CardView,
 
         _renderCardList,
-        _renderNoteListItem,
-        _renderTodoListItem,
 
         CLASS_NAMES = {
             card: 'cb-card',
+            cardList: 'cb-card-list',
             cardContainer: 'cb-card-container',
-            cardEditing: 'cb-card-editing',
+            cardActive: 'cb-card-active',
             cardTodoCheckbox: 'cb-card-todo--checkbox',
             cardNote: 'cb-card-note',
             cardTodo: 'cb-card-todo',
             newCard: 'cb-card-new',
             iconUnchecked: 'cb-card-todo--icon-checkbox-unchecked',
             iconChecked: 'cb-card-todo--icon-checkbox-checked'
-        },
-
-        KEY_CODES = {
-            backspace: 8,
-            enter: 13,
-            escape: 27,
-            space: 32,
-            n: 78,
-            equals: 187,
-            dash: 189
         };
 
     _renderCardList = Micro.compile(
-        '<ul class="cb-card-list">' +
+        '<ul class="' + CLASS_NAMES.cardList + '">' +
             '<% Y.Array.each(this.cards, function(card) { %>' +
                 '<li class="' + CLASS_NAMES.cardContainer + '" data-id="<%= card.id %>"></li>' +
             '<% }); %>' +
         '</ul>'
     );
 
-    _renderNoteListItem = Micro.compile(
-        '<ul class="' + CLASS_NAMES.cardNote + '">' +
-            '<li></li>' +
-        '</ul>'
-    );
-
-    _renderTodoListItem = Micro.compile(
-        '<ol class="' + CLASS_NAMES.cardTodo + '">' +
-            '<li class="' + CLASS_NAMES.iconUnchecked + ' ' + CLASS_NAMES.cardTodoCheckbox + '">&nbsp;</li>' +
-        '</ol>'
-    );
-
     Y.namespace('CB').CardListView = Y.Base.create('cb-card-list-view', Y.View, [], {
 
         initializer: function () {
             this.get('modelList').after(['add', 'remove', 'reset'], this.render, this);
-            this._attachViewModeEventHandlers();
         },
 
         render: function () {
@@ -79,6 +55,8 @@ YUI.add('cb-card-list-view', function (Y) {
                 cardView.render();
             });
 
+            this._attachViewModeEventHandlers();
+
             return this;
         },
 
@@ -93,11 +71,11 @@ YUI.add('cb-card-list-view', function (Y) {
          * @method _attachViewModeEventHandlers
          */
         _attachViewModeEventHandlers: function () {
-            var container = this.get('container');
+            var cardListNode = this.get('container').one('.' + CLASS_NAMES.cardList);
 
-            container.delegate('mousedown', this._toggleCheckbox, '.' + CLASS_NAMES.cardTodoCheckbox, this);
-            container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
-            Y.one(window).on('keydown', this._switchNewNoteCardToEditMode, this);
+            cardListNode.delegate('mousedown', this._toggleCheckbox, '.' + CLASS_NAMES.cardTodoCheckbox, this);
+            cardListNode.delegate('click', this._activateCardForEditing, '.' + CLASS_NAMES.card, this);
+            Y.one(Y.config.win).on('keydown', this._switchNewNoteCardToEditMode, this);
         },
 
         /**
@@ -107,61 +85,11 @@ YUI.add('cb-card-list-view', function (Y) {
          * @method _detachViewModeEventHandlers
          */
         _detachViewModeEventHandlers: function () {
-            this.get('container').detach('click');
-            Y.one(window).detach('keydown', this._switchNewNoteCardToEditMode);
-        },
+            var container = this.get('container');
 
-        /**
-         * Attaches all event handlers necessary for edit mode to be active
-         *
-         * @private
-         * @method _attachEditModeEventHandlers
-         */
-        _attachEditModeEventHandlers: function () {
-            var activeCardNode = this.get('activeCardNode');
-
-            activeCardNode.after('clickoutside', this._switchToViewMode, this);
-            activeCardNode.after('keydown', this._keydownStrokeListener, this);
-            activeCardNode.after('paste', this._pasteAsPlainText, this);
-        },
-
-        /**
-         * Detaches all custom event handlers for edit mode
-         *
-         * @private
-         * @method _detachEditModeEventHandlers
-         */
-        _detachEditModeEventHandlers: function () {
-            var activeCardNode = this.get('activeCardNode');
-
-            activeCardNode.detach('clickoutside');
-            activeCardNode.detach('keydown', this._keydownStrokeListener);
-            activeCardNode.detach('paste');
-        },
-
-        /**
-         * Converts the passed card node into an edit field.
-         *
-         * @private
-         * @method _switchToEditMode
-         * @param  {Node} cardNode The card to switch to edit mode
-         */
-        _switchToEditMode: function (cardNode) {
-            this.get('modelList').set('mode', 'edit');
-            this.set('activeCardNode', cardNode);
-
-            // If there is no id set on the card node, clear the placeholder text.
-            if (!cardNode.getData('id')) {
-                cardNode.empty();
-            }
-
-            this._detachViewModeEventHandlers();
-            this._attachEditModeEventHandlers();
-
-            // Enhance the card node for editing
-            cardNode.addClass(CLASS_NAMES.cardEditing);
-            $(cardNode.getDOMNode()).wysiwyg();
-            cardNode.focus();
+            container.detach('click');
+            container.detach('mousedown');
+            Y.one(Y.config.win).detach('keydown', this._switchNewNoteCardToEditMode);
         },
 
         /**
@@ -205,7 +133,7 @@ YUI.add('cb-card-list-view', function (Y) {
             this._detachEditModeEventHandlers();
             this._attachViewModeEventHandlers();
 
-            activeCardNode.removeClass(CLASS_NAMES.cardEditing);
+            activeCardNode.removeClass(CLASS_NAMES.cardActive);
 
             this.set('activeCardNode', null);
 
@@ -268,25 +196,6 @@ YUI.add('cb-card-list-view', function (Y) {
         },
 
         /**
-         * Determines which card node was clicked for edit
-         *
-         * @eventHandler
-         * @method _getCardForEditMode
-         * @param  {Event} click event
-         */
-        _getCardForEditMode: function (event) {
-            var targetNode = event.target,
-                cardClass = CLASS_NAMES.card,
-                cardNode = null;
-
-            if (!targetNode.hasClass(CLASS_NAMES.cardTodoCheckbox)) {
-                cardNode = targetNode.hasClass(cardClass) ? targetNode : targetNode.ancestor('.' + cardClass);
-            }
-
-            this._switchToEditMode(cardNode);
-        },
-
-        /**
          * Toggles the state of the checkbox
          *
          * @eventHandler
@@ -302,77 +211,6 @@ YUI.add('cb-card-list-view', function (Y) {
             // This is to prevent the checkbox from toggling twice, as the event bubbles from the card container,
             // and fires twice.
             event.stopImmediatePropagation();
-        },
-
-        /**
-         * Pastes any clipboard selection as plain text to avoid any unintended weirdness in formatting.
-         *
-         * @eventHandler
-         * @method _pasteAsPlainText
-         * @param  {Event} paste event
-         */
-        _pasteAsPlainText: function (event) {
-            event.preventDefault();
-            document.execCommand('insertHTML', false, event._event.clipboardData.getData('text/plain'));
-        },
-
-        /**
-         * Manages the keydown strokes during the editing of a card.
-         *
-         * @eventHandler
-         * @method _keydownStrokeListener
-         * @param  {Event} keydown event
-         */
-        _keydownStrokeListener: function (event) {
-            var keyCode = event.keyCode,
-                textCursorPosition = window.getSelection().extentOffset,
-                firstChar = this.get('firstChar'),
-                activeCardNode,
-                oldContent,
-                cardId;
-
-            // Escape cancels the edit.
-            if (keyCode === KEY_CODES.escape) {
-                activeCardNode = this.get('activeCardNode');
-                cardId         = activeCardNode.getData('id');
-
-                if (cardId) {
-                    oldContent = this.get('modelList').getById(cardId).get('content');
-                } else {
-                    oldContent = '';
-                }
-
-                activeCardNode.setHTML(oldContent);
-                this._switchToViewMode();
-            }
-
-            // Shift + Enter saves the note if there are changes.
-            if (keyCode === KEY_CODES.enter && event.shiftKey) {
-                event.preventDefault();
-                this._switchToViewMode();
-            }
-
-            // Store the first char for todo and note insertion.
-            if (textCursorPosition === 0) {
-                this.set('firstChar', keyCode);
-            }
-
-            // Enhance the character into todo or note list items.
-            if (keyCode === KEY_CODES.space && textCursorPosition === 1) {
-                if (firstChar === KEY_CODES.dash) {
-                    event.preventDefault();
-                    document.execCommand('delete');
-                    document.execCommand('insertHTML', false, _renderNoteListItem());
-
-                } else if (firstChar === KEY_CODES.equals) {
-                    event.preventDefault();
-                    document.execCommand('delete');
-                    document.execCommand('insertHTML', false, _renderTodoListItem());
-                    Y.later(0, this, function () {
-                        document.execCommand('delete');
-                    });
-                }
-            }
         }
 
     }, {
@@ -385,16 +223,6 @@ YUI.add('cb-card-list-view', function (Y) {
              * @type {Node}
              */
             activeCardNode: {
-                value: null
-            },
-
-            /**
-             * The first character of the line being edited
-             *
-             * @attribute firstChar
-             * @type {String}
-             */
-            firstChar: {
                 value: null
             }
         }

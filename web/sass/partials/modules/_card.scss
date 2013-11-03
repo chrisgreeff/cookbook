@@ -23,9 +23,9 @@
     padding: $card-new-vertical-padding $card-horizontal-padding;
 }
 
-.cb-card-editing {
-    color: $card-editing-text-color;
-    box-shadow: $card-editing-box-shadow;
+.cb-card-active {
+    color: $card-active-text-color;
+    box-shadow: $card-active-box-shadow;
 }
 
 .cb-card-note {
