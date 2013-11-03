@@ -11,7 +11,7 @@ YUI.add('cb-wallet-list-view', function (Y) {
         CLASS_NAMES = {
             card: 'cb-card',
             cardContainer: 'cb-card-container',
-            newCard: 'cb-new-card',
+            newCard: 'cb-card-new',
             wallet: 'cb-wallet',
             walletList: 'cb-wallet-list'
         };

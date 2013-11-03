@@ -4,6 +4,7 @@ YUI.add('cb-card-list-view', function (Y) {
 
     var Micro = new Y.Template(),
         Card  = Y.CB.Card,
+        CardView = Y.CB.CardView,
 
         _renderCardList,
         _renderNoteListItem,
@@ -67,20 +68,16 @@ YUI.add('cb-card-list-view', function (Y) {
             }));
 
             cardList.each(function (card) {
-                var cardContainer = container.one('li[data-date="' + card.get('id') + '"]'),
-                    cardListView;
+                var cardContainer = container.one('li[data-id="' + card.get('id') + '"]'),
+                    cardView;
 
-                cardListView = new CardListView({
-                    modelList: card.get('cards'),
+                cardView = new CardView({
+                    model: card,
                     container: cardContainer
                 });
 
-                cardListView.render();
+                cardView.render();
             });
-
-            this.get('container').setHTML(_renderCardList({
-                cards: this.get('modelList').toJSON()
-            }));
 
             return this;
         },
@@ -412,6 +409,7 @@ YUI.add('cb-card-list-view', function (Y) {
         'view',
         'yui-later',
         'template',
-        'cb-card-list'
+        'cb-card-list',
+        'cb-card-view'
     ]
 });

@@ -5,24 +5,26 @@ YUI.add('cb-card-view', function (Y) {
     var Micro = new Y.Template(),
         Card  = Y.CB.Card,
 
-        _renderCard;
+        _renderCard,
+
+        CLASS_NAMES = {
+            card: 'cb-card'
+        };
 
     _renderCard = Micro.compile(
         '<div tabindex="0" class="' + CLASS_NAMES.card + '">' +
             '<%== this.content %>' +
-        '</div>' +
+        '</div>'
     );
 
-    Y.namespace('CB').CardListView = Y.Base.create('cb-card-list-view', Y.View, [], {
+    Y.namespace('CB').CardView = Y.Base.create('cb-card-view', Y.View, [], {
 
         initializer: function () {
 
         },
 
         render: function () {
-            this.get('container').setHTML(_renderCard({
-                card: this.get('model')
-            }));
+            this.get('container').setHTML(_renderCard(this.get('model').toJSON()));
 
             return this;
         }
