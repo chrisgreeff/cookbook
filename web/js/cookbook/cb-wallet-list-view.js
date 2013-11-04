@@ -17,6 +17,10 @@ YUI.add('cb-wallet-list-view', function (Y) {
             newCard: 'cb-card-new',
             wallet: 'cb-wallet',
             walletList: 'cb-wallet-list'
+        },
+
+        KEY_CODES = {
+            n: 78
         };
 
     _renderWalletList = Micro.compile(
@@ -34,6 +38,7 @@ YUI.add('cb-wallet-list-view', function (Y) {
             this.get('modelList').after(['add', 'remove', 'reset'], this.render, this);
 
             Y.one(Y.config.win).on('keydown', this._activateNewCardNode, this);
+            this.get('newCardModel').on('activeChange', this._saveNewCard, this);
         },
 
         render: function () {
@@ -47,10 +52,7 @@ YUI.add('cb-wallet-list-view', function (Y) {
 
             // Create and render the new card view.
             newCardView = new CardView({
-                model: new Card({
-                    content: 'New Card',
-                    type: 'new'
-                }),
+                model: this.get('newCardModel'),
                 container: container.one('.' + CLASS_NAMES.cardContainer)
             });
 
@@ -70,7 +72,7 @@ YUI.add('cb-wallet-list-view', function (Y) {
             });
 
             return this;
-        }
+        },
 
         // ----------------------------------------------------------
         // ==================== Private Functions ===================
@@ -90,14 +92,27 @@ YUI.add('cb-wallet-list-view', function (Y) {
         _activateNewCardNode: function (event) {
             if (event.keyCode === KEY_CODES.n && event.shiftKey) {
                 event.preventDefault();
-                this._switchToEditMode(Y.one('.' + CLASS_NAMES.newCard));
+                this.get('newCardModel').set('active', true, {
+                    silent: true
+                });
             }
+        },
+
+        _saveNewCard: function (event) {
+            console.log(event);
         }
 
     }, {
 
         ATTRS: {
-
+            newCardModel: {
+                valueFn: function () {
+                    return new Card({
+                        content: 'New Card',
+                        type: 'new'
+                    });
+                }
+            }
         }
 
     });

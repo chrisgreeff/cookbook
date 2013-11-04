@@ -75,7 +75,6 @@ YUI.add('cb-card-list-view', function (Y) {
 
             container.delegate('mousedown', this._toggleCheckbox, '.' + CLASS_NAMES.cardTodoCheckbox, this);
             container.delegate('click', this._activateCardForEditing, '.' + CLASS_NAMES.card, this);
-            Y.one(Y.config.win).on('keydown', this._switchNewNoteCardToEditMode, this);
         },
 
         /**
@@ -89,7 +88,6 @@ YUI.add('cb-card-list-view', function (Y) {
 
             container.detach('click');
             container.detach('mousedown');
-            Y.one(Y.config.win).detach('keydown', this._switchNewNoteCardToEditMode);
         },
 
         /**

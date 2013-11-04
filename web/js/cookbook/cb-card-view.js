@@ -12,7 +12,7 @@ YUI.add('cb-card-view', function (Y) {
 
         CLASS_NAMES = {
             card: 'cb-card',
-            cardEditing: 'cb-card-editing',
+            cardActive: 'cb-card-active',
             cardTodoCheckbox: 'cb-card-todo--checkbox',
             cardNote: 'cb-card-note',
             cardTodo: 'cb-card-todo',
@@ -26,7 +26,6 @@ YUI.add('cb-card-view', function (Y) {
             enter: 13,
             escape: 27,
             space: 32,
-            n: 78,
             equals: 187,
             dash: 189
         };
@@ -120,10 +119,66 @@ YUI.add('cb-card-view', function (Y) {
 
             this._attachActiveCardEventHandlers();
 
+            if (this.get('model').get('type') === 'new') {
+                cardNode.setHTML('');
+            }
+
             // Enhance the card node for editing
             cardNode.addClass(CLASS_NAMES.cardActive);
             $(cardNode.getDOMNode()).wysiwyg();
             cardNode.focus();
+        },
+
+
+        /**
+         * Handles any tasks needed to be done before setting the app back to view mode.
+         *
+         * @private
+         * @method _switchToViewMode
+         */
+        _switchToViewMode: function () {
+            var cardList = this.get('modelList'),
+                activeCardNode = this.get('activeCardNode'),
+                activeCardNodeContent = activeCardNode.getHTML(),
+                activeCardNodeText = activeCardNode.get('text'),
+                cardId = activeCardNode.getData('id'),
+                addition = false,
+                card;
+
+            // New card with non-html content. Create and save model.
+            if (!cardId) {
+                if (activeCardNodeText) {
+                    this._createAndSaveCard(activeCardNodeContent);
+                    addition = true;
+                } else {
+                    // @todo destroy wysiwyg node, and re-create new card node.
+                }
+
+            // Existing card.
+            } else if (cardId) {
+                card = cardList.getById(cardId);
+
+                // Update card only if the content has changed.
+                if (activeCardNodeContent !== card.get('content')) {
+                    // If there is no text for an existing card, confirm before deletion.
+                    if (activeCardNodeText || confirm('Bro are you sure...?')) {
+                        cardList.updateCardContent(card, activeCardNodeContent);
+                        addition = true;
+                    }
+                }
+            }
+
+            this._detachEditModeEventHandlers();
+            this._attachViewModeEventHandlers();
+
+            activeCardNode.removeClass(CLASS_NAMES.cardActive);
+
+            this.set('activeCardNode', null);
+
+            // Sort list on addition of new card
+            if (addition) {
+                this._sortCardList();
+            }
         },
 
         // ----------------------------------------------------------
