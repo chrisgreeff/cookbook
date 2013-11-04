@@ -14,12 +14,6 @@ YUI.add('cb-wallet-list', function (Y) {
             return a < b ? 1 : (a > b ? -1 : 0);
         }
 
-    }, {
-
-        ATTRS: {
-
-        }
-
     });
 
 }, '1.0.0', {

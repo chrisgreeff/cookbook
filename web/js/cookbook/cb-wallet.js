@@ -79,6 +79,16 @@ YUI.add('cb-wallet', function (Y) {
              * @type {Date | String}
              */
             date: {
+                setter: function (value) {
+                    if (typeof value === 'object') {
+                        return value;
+                    } else if (typeof value === 'string') {
+                        return new Date(value);
+                    } else {
+                        return Y.Attribute.INVALID_VALUE;
+                    }
+                },
+
                 valueFn: function() {
                     return new Date();
                 }

@@ -58,7 +58,7 @@ YUI.add('cb-card-view', function (Y) {
     Y.namespace('CB').CardView = Y.Base.create('cb-card-view', Y.View, [], {
 
         initializer: function () {
-            this.get('model').after('activeChange', this._switchMode, this);
+            this.get('model').after('activeChange', this._activateCardNode, this);
         },
 
         render: function () {
@@ -66,7 +66,7 @@ YUI.add('cb-card-view', function (Y) {
                 cardJSON = card.toJSON(),
                 container = this.get('container');
 
-            if (card.get('type')) {
+            if (card.get('type') === 'new') {
                 container.setHTML(_renderNewCard(cardJSON));
             } else {
                 container.setHTML(_renderCard(cardJSON));
@@ -88,7 +88,7 @@ YUI.add('cb-card-view', function (Y) {
         _attachActiveCardEventHandlers: function () {
             var cardNode = this.get('container').one('.' + CLASS_NAMES.card);
 
-            cardNode.after('clickoutside', this._switchToViewMode, this);
+            cardNode.after('clickoutside', this._saveCardChanges, this);
             cardNode.after('keydown', this._keydownStrokeListener, this);
             cardNode.after('paste', this._pasteAsPlainText, this);
         },
@@ -108,13 +108,82 @@ YUI.add('cb-card-view', function (Y) {
         },
 
         /**
+         * Handles any tasks needed to be done before setting the app back to view mode.
+         *
+         * @private
+         * @method _saveCardChanges
+         */
+        _saveCardChanges: function () {
+            var card = this.get('model'),
+                cardList = card.get('lists'),
+                cardNode = this.get('container').one('.' + CLASS_NAMES.card),
+                cardNodeHtml = cardNode.getHTML(),
+                cardNodeText = cardNode.get('text'),
+                cardId = card.get('id'),
+                now = new Date();
+
+            if (!cardList && cardNodeText) {
+                card.setAttrs({
+                    content: cardNodeHtml
+                });
+            }
+
+            this._detachActiveCardEventHandlers();
+
+            // var cardList = this.get('modelList'),
+            //     activeCardNode = this.get('activeCardNode'),
+            //     activeCardNodeContent = activeCardNode.getHTML(),
+            //     activeCardNodeText = activeCardNode.get('text'),
+            //     cardId = activeCardNode.getData('id'),
+            //     addition = false,
+            //     card;
+
+            // // New card with non-html content. Create and save model.
+            // if (!cardId) {
+            //     if (activeCardNodeText) {
+            //         this._createAndSaveCard(activeCardNodeContent);
+            //         addition = true;
+            //     } else {
+            //         // @todo destroy wysiwyg node, and re-create new card node.
+            //     }
+
+            // // Existing card.
+            // } else if (cardId) {
+            //     card = cardList.getById(cardId);
+
+            //     // Update card only if the content has changed.
+            //     if (activeCardNodeContent !== card.get('content')) {
+            //         // If there is no text for an existing card, confirm before deletion.
+            //         if (activeCardNodeText || confirm('Bro are you sure...?')) {
+            //             cardList.updateCardContent(card, activeCardNodeContent);
+            //             addition = true;
+            //         }
+            //     }
+            // }
+
+            // this._detachEditModeEventHandlers();
+            // this._attachViewModeEventHandlers();
+
+            // activeCardNode.removeClass(CLASS_NAMES.cardActive);
+
+            // Sort list on addition of new card
+            // if (addition) {
+            //     this._sortCardList();
+            // }
+        },
+
+        // ----------------------------------------------------------
+        // ===================== Event Handlers =====================
+        // ----------------------------------------------------------
+
+        /**
          * Converts the passed card node into an edit field.
          *
          * @private
          * @method _activateCardNode
          * @param  {Node} cardNode The card to switch to edit mode
          */
-        _activateCardNode: function () {
+        _activateCardNode: function (/*event*/) {
             var cardNode = this.get('container').one('.' + CLASS_NAMES.card);
 
             this._attachActiveCardEventHandlers();
@@ -127,68 +196,6 @@ YUI.add('cb-card-view', function (Y) {
             cardNode.addClass(CLASS_NAMES.cardActive);
             $(cardNode.getDOMNode()).wysiwyg();
             cardNode.focus();
-        },
-
-
-        /**
-         * Handles any tasks needed to be done before setting the app back to view mode.
-         *
-         * @private
-         * @method _switchToViewMode
-         */
-        _switchToViewMode: function () {
-            var cardList = this.get('modelList'),
-                activeCardNode = this.get('activeCardNode'),
-                activeCardNodeContent = activeCardNode.getHTML(),
-                activeCardNodeText = activeCardNode.get('text'),
-                cardId = activeCardNode.getData('id'),
-                addition = false,
-                card;
-
-            // New card with non-html content. Create and save model.
-            if (!cardId) {
-                if (activeCardNodeText) {
-                    this._createAndSaveCard(activeCardNodeContent);
-                    addition = true;
-                } else {
-                    // @todo destroy wysiwyg node, and re-create new card node.
-                }
-
-            // Existing card.
-            } else if (cardId) {
-                card = cardList.getById(cardId);
-
-                // Update card only if the content has changed.
-                if (activeCardNodeContent !== card.get('content')) {
-                    // If there is no text for an existing card, confirm before deletion.
-                    if (activeCardNodeText || confirm('Bro are you sure...?')) {
-                        cardList.updateCardContent(card, activeCardNodeContent);
-                        addition = true;
-                    }
-                }
-            }
-
-            this._detachEditModeEventHandlers();
-            this._attachViewModeEventHandlers();
-
-            activeCardNode.removeClass(CLASS_NAMES.cardActive);
-
-            this.set('activeCardNode', null);
-
-            // Sort list on addition of new card
-            if (addition) {
-                this._sortCardList();
-            }
-        },
-
-        // ----------------------------------------------------------
-        // ===================== Event Handlers =====================
-        // ----------------------------------------------------------
-
-        _switchMode: function (event) {
-            if (event.newVal) {
-                this._activateCardNode();
-            }
         },
 
         /**
@@ -230,13 +237,13 @@ YUI.add('cb-card-view', function (Y) {
                 }
 
                 activeCardNode.setHTML(oldContent);
-                this._switchToViewMode();
+                this._saveCardChanges();
             }
 
             // Shift + Enter saves the note if there are changes.
             if (keyCode === KEY_CODES.enter && event.shiftKey) {
                 event.preventDefault();
-                this._switchToViewMode();
+                this._saveCardChanges();
             }
 
             // Store the first char for todo and note insertion.

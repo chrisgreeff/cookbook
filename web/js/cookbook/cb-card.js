@@ -38,7 +38,9 @@ YUI.add('cb-card', function (Y) {
              * @attribute type
              * @type {String}
              */
-            type: {},
+            type: {
+                value: 'saved'
+            },
 
             /**
              * Whether or not the card is active
