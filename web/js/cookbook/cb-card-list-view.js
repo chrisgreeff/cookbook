@@ -23,10 +23,6 @@ YUI.add('cb-card-list-view', function (Y) {
 
     Y.namespace('CB').CardListView = Y.Base.create('cb-card-list-view', Y.View, [], {
 
-        initializer: function () {
-            this.get('modelList').after(['add', 'remove', 'reset'], this.render, this);
-        },
-
         render: function () {
             var container = this.get('container'),
                 cardList = this.get('modelList');

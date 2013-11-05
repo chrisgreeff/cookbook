@@ -5,6 +5,20 @@ YUI.add('cb-wallet-list', function (Y) {
     Y.namespace('CB').WalletList = Y.Base.create('cb-wallet-list', Y.ModelList, [], {
         model: Y.CB.Wallet,
 
+        getWalletByDate: function (date) {
+            var dateValue = (typeof date === 'string') ? date : date.toString(),
+                result = null;
+
+            this.some(function (wallet) {
+                if (wallet.get('date').toString() === dateValue) {
+                    result = wallet;
+                    return true;
+                }
+            });
+
+            return result;
+        },
+
         // Sorting by dateLastEdited when modelList.sort() is called.
         comparator: function (model) {
             return model.get('date');

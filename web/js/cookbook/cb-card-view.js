@@ -64,13 +64,18 @@ YUI.add('cb-card-view', function (Y) {
                 cardJSON = card.toJSON(),
                 container = this.get('container');
 
+            console.log('rendering card: ' + card.get('id'));
+
             if (card.get('type') === 'new') {
                 container.setHTML(_renderNewCard(cardJSON));
             } else {
                 container.setHTML(_renderCard(cardJSON));
             }
 
-            this.get('model').after('activeChange', this._activateCardNode, this);
+            if (!card.getEvent('activeChange')) {
+                console.log('attaching activeChange on card: ' + card.get('id'));
+                card.after('activeChange', this._checkIfSilent, this);
+            }
 
             return this;
         },
@@ -87,6 +92,7 @@ YUI.add('cb-card-view', function (Y) {
          */
         _attachActiveCardEventHandlers: function () {
             var cardNode = this.get('container').one('.' + CLASS_NAMES.card);
+            console.log('attaching card event handlers on card node: ' + cardNode.getData('id'));
 
             cardNode.after('clickoutside', this._saveCardChanges, this);
             cardNode.after('keydown', this._keydownStrokeListener, this);
@@ -101,10 +107,34 @@ YUI.add('cb-card-view', function (Y) {
          */
         _detachActiveCardEventHandlers: function () {
             var cardNode = this.get('container').one('.' + CLASS_NAMES.card);
+            console.log('detaching card event handlers from card node: ' + cardNode.getData('id'));
 
-            cardNode.detach('clickoutside');
+            cardNode.detach('clickoutside', this._saveCardChanges);
             cardNode.detach('keydown', this._keydownStrokeListener);
-            cardNode.detach('paste');
+            cardNode.detach('paste', this._pasteAsPlainText);
+        },
+
+        /**
+         * Converts the passed card node into an edit field.
+         *
+         * @private
+         * @method _enhanceCardNodeToEditable
+         * @param  {Node} cardNode The card to switch to edit mode
+         */
+        _enhanceCardNodeToEditable: function () {
+            var cardNode = this.get('container').one('.' + CLASS_NAMES.card);
+
+            console.log('enhancing card node so it is editable: ' + cardNode.getData('id'));
+            this._attachActiveCardEventHandlers();
+
+            if (this.get('model').get('type') === 'new') {
+                cardNode.setHTML('');
+            }
+
+            // Enhance the card node for editing
+            cardNode.addClass(CLASS_NAMES.cardActive);
+            $(cardNode.getDOMNode()).wysiwyg();
+            cardNode.focus();
         },
 
         /**
@@ -113,7 +143,7 @@ YUI.add('cb-card-view', function (Y) {
          * @private
          * @method _saveCardChanges
          */
-        _saveCardChanges: function () {
+        _saveCardChanges: function (event) {
             var card = this.get('model'),
                 cardList = card.get('lists'),
                 cardNode = this.get('container').one('.' + CLASS_NAMES.card),
@@ -122,13 +152,16 @@ YUI.add('cb-card-view', function (Y) {
                 cardId = card.get('id'),
                 now = new Date();
 
-            if (!cardList && cardNodeText) {
-                card.setAttrs({
-                    content: cardNodeHtml
+            console.log('Saving card changes for: ' + card.get('id'));
+            this._detachActiveCardEventHandlers();
+
+            if (cardNodeText) {
+                card.set('content', cardNodeHtml);
+                card.set('dateLastEdited', now);
+                card.set('active', false, {
+                    fromCardView: true
                 });
             }
-
-            this._detachActiveCardEventHandlers();
 
             // var cardList = this.get('modelList'),
             //     activeCardNode = this.get('activeCardNode'),
@@ -176,26 +209,10 @@ YUI.add('cb-card-view', function (Y) {
         // ===================== Event Handlers =====================
         // ----------------------------------------------------------
 
-        /**
-         * Converts the passed card node into an edit field.
-         *
-         * @private
-         * @method _activateCardNode
-         * @param  {Node} cardNode The card to switch to edit mode
-         */
-        _activateCardNode: function (/*event*/) {
-            var cardNode = this.get('container').one('.' + CLASS_NAMES.card);
-
-            this._attachActiveCardEventHandlers();
-
-            if (this.get('model').get('type') === 'new') {
-                cardNode.setHTML('');
+        _checkIfSilent: function (event) {
+            if (!event.fromCardView) {
+                this._enhanceCardNodeToEditable();
             }
-
-            // Enhance the card node for editing
-            cardNode.addClass(CLASS_NAMES.cardActive);
-            $(cardNode.getDOMNode()).wysiwyg();
-            cardNode.focus();
         },
 
         /**
