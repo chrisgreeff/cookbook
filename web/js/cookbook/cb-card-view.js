@@ -57,9 +57,7 @@ YUI.add('cb-card-view', function (Y) {
 
     Y.namespace('CB').CardView = Y.Base.create('cb-card-view', Y.View, [], {
 
-        initializer: function () {
-            this.get('model').after('activeChange', this._activateCardNode, this);
-        },
+        initializer: function () {},
 
         render: function () {
             var card = this.get('model'),
@@ -71,6 +69,8 @@ YUI.add('cb-card-view', function (Y) {
             } else {
                 container.setHTML(_renderCard(cardJSON));
             }
+
+            this.get('model').after('activeChange', this._activateCardNode, this);
 
             return this;
         },

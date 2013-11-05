@@ -37,25 +37,36 @@ YUI.add('cb-wallet-list-view', function (Y) {
 
         initializer: function () {
             this.get('modelList').after(['add', 'remove', 'reset'], this.render, this);
-            this.get('newCardModel').after('contentChange', this._saveNewCard, this);
             this._attachViewModeEventHandlers();
         },
 
         render: function () {
             var container = this.get('container'),
                 walletList = this.get('modelList'),
+                newCardModel = this.get('newCardModel'),
                 newCardView;
 
             container.setHTML(_renderWalletList({
                 wallets: walletList.toJSON()
             }));
 
-            // Create and render the new card view.
-            newCardView = new CardView({
-                model: this.get('newCardModel'),
-                container: container.one('.' + CLASS_NAMES.cardContainer)
+            if (newCardModel) {
+                newCardModel.destroy();
+            }
+
+            newCardModel = new Card({
+                content: 'New Card',
+                type: 'new'
             });
 
+            this.set('newCardModel', newCardModel);
+            newCardModel.after('contentChange', this._determineContentSource, this);
+
+            // Create and render the new card view.
+            newCardView = new CardView({
+                model: newCardModel,
+                container: container.one('.' + CLASS_NAMES.cardContainer)
+            });
             newCardView.render();
 
             // Create and render the card list view for each wallet
@@ -134,17 +145,19 @@ YUI.add('cb-wallet-list-view', function (Y) {
          * @method _activateNewCardNode
          */
         _activateNewCardNode: function () {
-            this.get('newCardModel').set('active', true, {
-                silent: true
-            });
+            this.get('newCardModel').set('active', true);
         },
 
+        /**
+         * Resets the new card model on the WalletList for a fresh re-render.
+         *
+         * @method _resetNewCardModel
+         * @return {[type]} [description]
+         */
         _resetNewCardModel: function () {
-            this.get('newCardModel').destroy();
-            this.set('newCardModel', new Card({
-                content: 'New Card',
-                type: 'new'
-            }));
+            this.get('newCardModel').set('content', 'New Card', {
+                silent: true
+            });
         },
 
         /**
@@ -239,33 +252,49 @@ YUI.add('cb-wallet-list-view', function (Y) {
             }
         },
 
-        _saveNewCard: function (/*event*/) {
+        _determineContentSource: function (event) {
+            if (!event.silent) {
+                this._saveCard();
+            }
+        },
+
+        /**
+         * Updates the card model, and re-organizes the model structure so the newly added card belongs to the
+         * correct wallet.
+         *
+         * @method _saveCard
+         * @param  {Card} card Card to update
+         */
+        _saveCard: function () {
             var newCard = this.get('newCardModel'),
                 walletList = this.get('modelList'),
                 latestWallet = walletList.item(0),
                 now = new Date(),
-                newCardList;
+                todaysWallet,
+                todaysCardList;
 
-            // Latest wallet is not todays wallet, so create one for today, and add new card to that.
+            // Latest wallet is not todays wallet, so create one for today.
             if (this._formatDate(latestWallet.get('date')) !== this._formatDate(now)) {
-                newCardList = new CardList({
-                    items: [
-                        new Card({
-                            id: Y.guid(),
-                            content: newCard.get('content'),
-                            dateCreated: now,
-                            dateLastEdited: now
-                        })
-                    ]
+                todaysCardList = new CardList();
+                todaysWallet = new Wallet({
+                    cards: todaysCardList,
+                    date: now
                 });
 
-                walletList.add(new Wallet({
-                    cards: newCardList,
-                    date: now
-                }));
+                walletList.add(todaysWallet, {
+                    silent: true
+                });
             } else {
-                latestWallet.get('cards').add(newCard);
+                todaysWallet = latestWallet;
+                todaysCardList = latestWallet.get('cards');
             }
+
+            todaysCardList.add(new Card({
+                id: Y.guid(),
+                content: newCard.get('content'),
+                dateCreated: now,
+                dateLastEdited: now
+            }));
 
             this._resetNewCardModel();
             this._sortWalletList();
@@ -275,14 +304,7 @@ YUI.add('cb-wallet-list-view', function (Y) {
     }, {
 
         ATTRS: {
-            newCardModel: {
-                valueFn: function () {
-                    return new Card({
-                        content: 'New Card',
-                        type: 'new'
-                    });
-                }
-            }
+            newCardModel: {}
         }
 
     });
