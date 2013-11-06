@@ -40,33 +40,16 @@ YUI.add('cb-wallet-list-view', function (Y) {
         },
 
         render: function () {
-            console.log('Rendering wallet list');
             var container = this.get('container'),
-                walletList = this.get('modelList'),
-                newCardModel = this.get('newCardModel'),
-                newCardView;
+                walletList = this.get('modelList');
+
+            console.log('Rendering wallet list');
 
             container.setHTML(_renderWalletList({
                 wallets: walletList.toJSON()
             }));
 
-            if (newCardModel) {
-                newCardModel.destroy();
-            }
-
-            newCardModel = new Card({
-                content: 'New Card',
-                type: 'new'
-            });
-
-            this.set('newCardModel', newCardModel);
-
-            // Create and render the new card view.
-            newCardView = new CardView({
-                model: newCardModel,
-                container: container.one('.' + CLASS_NAMES.cardContainer)
-            });
-            newCardView.render();
+            this._renderNewCard();
 
             // Create and render the card list view for each wallet
             walletList.each(function (wallet) {
@@ -89,6 +72,30 @@ YUI.add('cb-wallet-list-view', function (Y) {
         // ----------------------------------------------------------
         // ==================== Private Functions ===================
         // ----------------------------------------------------------
+
+        _renderNewCard: function () {
+            var newCardView = this.get('newCardView'),
+                newCardModel;
+
+            if (newCardView) {
+                newCardView.destroy();
+                this.get('newCardModel').destroy();
+            }
+
+            newCardModel = new Card({
+                content: 'New Card',
+                type: 'new'
+            });
+            this.set('newCardModel', newCardModel);
+
+            // Create and render the new card view.
+            newCardView = new CardView({
+                model: newCardModel,
+                container: this.get('container').one('.' + CLASS_NAMES.cardContainer)
+            });
+            this.set('newCardView', newCardView);
+            newCardView.render();
+        },
 
         /**
          * Attaches all event handlers necessary for view mode to be active
@@ -132,7 +139,8 @@ YUI.add('cb-wallet-list-view', function (Y) {
                 latestWallet = walletList.item(0),
                 now = new Date(),
                 todaysWallet,
-                todaysCardList;
+                todaysCardList,
+                cardConfig;
 
             // Latest wallet is not todays wallet, so create one for today.
             if (this._formatDate(latestWallet.get('date')) !== this._formatDate(now)) {
@@ -151,23 +159,27 @@ YUI.add('cb-wallet-list-view', function (Y) {
             }
 
             if (card.get('type') === 'new') {
-                todaysCardList.add(new Card({
+                cardConfig = {
                     id: Y.guid(),
                     content: card.get('content'),
                     dateCreated: now,
                     dateLastEdited: now
-                }));
+                };
             } else {
-                card.lists[0].remove(card, {
-                    silent: true
-                });
-                todaysCardList.add(card, {
-                    silent: true
-                });
+                cardConfig = {
+                    id: card.get('id'),
+                    content: card.get('content'),
+                    dateCreated: card.get('dateCreated'),
+                    dateLastEdited: now
+                };
+                card.destroy();
             }
 
+            todaysCardList.add(new Card(cardConfig), {
+                silent: true
+            });
+
             console.log('detaching activeChange on card: ' + card.get('id'));
-            card.detach('activeChange');
 
             this._sortWalletList();
         },
@@ -236,7 +248,7 @@ YUI.add('cb-wallet-list-view', function (Y) {
                 card = this.get('modelList').getWalletByDate(walletDate).get('cards').getById(cardId);
             }
 
-            console.log('attaching activeChange on card: ' + card.get('id'));
+            console.log('attaching activeChange on card: ' + card.get('id') + ' from wallet');
             card.after('activeChange', this._checkActiveChangeSource, this);
             console.log('Activating card from wallet list for edit: ' + card.get('id'));
             card.set('active', true, {
@@ -285,7 +297,8 @@ YUI.add('cb-wallet-list-view', function (Y) {
     }, {
 
         ATTRS: {
-            newCardModel: {}
+            newCardModel: {},
+            newCardView: {}
         }
 
     });

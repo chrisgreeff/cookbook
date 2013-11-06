@@ -92,7 +92,7 @@ YUI.add('cb-card-view', function (Y) {
          */
         _attachActiveCardEventHandlers: function () {
             var cardNode = this.get('container').one('.' + CLASS_NAMES.card);
-            console.log('attaching card event handlers on card node: ' + cardNode.getData('id'));
+            console.log('attaching card event handlers on card node: ' + this.get('container').getData('id'));
 
             cardNode.after('clickoutside', this._saveCardChanges, this);
             cardNode.after('keydown', this._keydownStrokeListener, this);
@@ -107,7 +107,7 @@ YUI.add('cb-card-view', function (Y) {
          */
         _detachActiveCardEventHandlers: function () {
             var cardNode = this.get('container').one('.' + CLASS_NAMES.card);
-            console.log('detaching card event handlers from card node: ' + cardNode.getData('id'));
+            console.log('detaching card event handlers from card node: ' + this.get('container').getData('id'));
 
             cardNode.detach('clickoutside', this._saveCardChanges);
             cardNode.detach('keydown', this._keydownStrokeListener);
@@ -124,7 +124,7 @@ YUI.add('cb-card-view', function (Y) {
         _enhanceCardNodeToEditable: function () {
             var cardNode = this.get('container').one('.' + CLASS_NAMES.card);
 
-            console.log('enhancing card node so it is editable: ' + cardNode.getData('id'));
+            console.log('enhancing card node so it is editable: ' + this.get('container').getData('id'));
             this._attachActiveCardEventHandlers();
 
             if (this.get('model').get('type') === 'new') {
