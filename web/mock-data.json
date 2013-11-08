@@ -3,13 +3,28 @@
         {
             "cards": [
                 {
-                    "id": "1234",
-                    "content": "My first card",
+                    "id": "1234aaaa",
+                    "content": "Test card 1",
                     "dateLastEdited": "Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)",
                     "dateCreated": "Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)"
+                }, {
+                    "id": "1234bbbb",
+                    "content": "Testing card 2",
+                    "dateLastEdited": "Sun Nov 03 2013 17:12:05 GMT+1300 (NZDT)",
+                    "dateCreated": "Sun Nov 03 2013 17:12:05 GMT+1300 (NZDT)"
                 }
             ],
             "date": "Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)"
+        }, {
+            "cards": [
+                {
+                    "id": "5678a",
+                    "content": "Testing card 3",
+                    "dateLastEdited": "Wed Nov 06 2013 22:44:04 GMT+1300 (NZDT)",
+                    "dateCreated": "Wed Nov 06 2013 22:44:04 GMT+1300 (NZDT)"
+                }
+            ],
+            "date": "Wed Nov 06 2013 22:44:04 GMT+1300 (NZDT)"
         }
     ]
 }

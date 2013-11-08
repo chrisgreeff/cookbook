@@ -56,6 +56,8 @@ YUI.add('cb-wallet-list-view', function (Y) {
                 var walletNode = container.one('li[data-date="' + wallet.get('date') + '"]'),
                     cardListView;
 
+                wallet.destoryCardListView();
+
                 cardListView = new CardListView({
                     modelList: wallet.get('cards'),
                     container: walletNode

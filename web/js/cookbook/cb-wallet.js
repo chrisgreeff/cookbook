@@ -96,7 +96,9 @@ YUI.add('cb-wallet', function (Y) {
                 valueFn: function() {
                     return new Date();
                 }
-            }
+            },
+
+            _cardListView: {}
 
         }
 

@@ -109,7 +109,7 @@ YUI.add('cb-card-view', function (Y) {
             var cardNode = this.get('container').one('.' + CLASS_NAMES.card);
             console.log('detaching card event handlers from card node: ' + this.get('container').getData('id'));
 
-            cardNode.detach('clickoutside', this._saveCardChanges);
+            cardNode.detach('clickoutside');
             cardNode.detach('keydown', this._keydownStrokeListener);
             cardNode.detach('paste', this._pasteAsPlainText);
         },
