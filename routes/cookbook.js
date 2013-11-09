@@ -14,12 +14,12 @@ db = new Db('cookbookdb', server);
 
 db.open(function (err, db) {
     if (!err) {
-        console.log("Connected to 'cookbookdb' database");
+        console.log('Connected to "cookbookdb" database');
         db.collection('wallets', {
             strict: true
         }, function (err, collection) {
             if (err) {
-                console.log("The 'wallets' collection doesn't exist. Creating it with sample data...");
+                console.log('The "wallets" collection doesn\'t exist. Creating it with sample data...');
                 populateWalletsDB();
             }
         });
@@ -27,7 +27,7 @@ db.open(function (err, db) {
             strict: true
         }, function (err, collection) {
             if (err) {
-                console.log("The 'cards' collection doesn't exist. Creating it with sample data...");
+                console.log('The "cards" collection doesn\'t exist. Creating it with sample data...');
                 populateCardsDB();
             }
         });
@@ -211,9 +211,11 @@ exports.deleteCard = function(req, res) {
 // You'd typically not find this code in a real-life app, since the database would already exist.
 populateWalletsDB = function() {
     var wallets = [{
+        id: 'wallet-1',
         date: 'today',
         cards: ['card-1']
     }, {
+        id: 'wallet-2',
         date: 'yesterday',
         cards: ['card-2', 'card-3']
     }];
@@ -227,20 +229,23 @@ populateWalletsDB = function() {
 
 populateCardsDB = function() {
     var cards = [{
-            "id": "card-1",
-            "content": "Test card 1",
-            "dateLastEdited": "Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)",
-            "dateCreated": "Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)"
+            id: 'card-1',
+            content: 'Test card 1',
+            dateLastEdited: 'Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)',
+            dateCreated: 'Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)',
+            wallet: 'wallet-1'
         }, {
-            "id": "card-2",
-            "content": "Testing card 2",
-            "dateLastEdited": "Sun Nov 03 2013 17:12:05 GMT+1300 (NZDT)",
-            "dateCreated": "Sun Nov 03 2013 17:12:05 GMT+1300 (NZDT)"
+            id: 'card-2',
+            content: 'Testing card 2',
+            dateLastEdited: 'Sun Nov 03 2013 17:12:05 GMT+1300 (NZDT)',
+            dateCreated: 'Sun Nov 03 2013 17:12:05 GMT+1300 (NZDT)',
+            wallet: 'wallet-1'
         }, {
-            "id": "card-3",
-            "content": "Testing card 3",
-            "dateLastEdited": "Wed Nov 06 2013 22:44:04 GMT+1300 (NZDT)",
-            "dateCreated": "Wed Nov 06 2013 22:44:04 GMT+1300 (NZDT)"
+            id: 'card-3',
+            content: 'Testing card 3',
+            dateLastEdited: 'Wed Nov 06 2013 22:44:04 GMT+1300 (NZDT)',
+            dateCreated: 'Wed Nov 06 2013 22:44:04 GMT+1300 (NZDT)',
+            wallet: 'wallet-2'
         }];
 
     db.collection('cards', function(err, collection) {
