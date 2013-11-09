@@ -1,3 +1,4 @@
 web/.sass-cache/*
 web/css/*
 .DS_Store
+node_modules
