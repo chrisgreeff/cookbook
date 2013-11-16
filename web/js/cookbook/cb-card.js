@@ -30,26 +30,6 @@ YUI.add('cb-card', function (Y) {
              */
             dateCreated: {
                 writeOnce: 'initOnly'
-            },
-
-            /**
-             * The type of the card
-             *
-             * @attribute type
-             * @type {String}
-             */
-            type: {
-                value: 'saved'
-            },
-
-            /**
-             * Whether or not the card is active
-             *
-             * @attribute active
-             * @type {Boolean}
-             */
-            active: {
-                value: false
             }
 
         }
