@@ -6,26 +6,7 @@ YUI.add('cb-wallet', function (Y) {
         CardList = Y.CB.CardList,
         CardListView = Y.CB.CardListView;
 
-    Y.namespace('CB').Wallet = Y.Base.create('cb-wallet', Y.Model, [], {
-
-        initializer: function () {
-            var cardList,
-                cardListView;
-
-            // Create Model List
-            // @todo this will need to be retrieved and build from a database (local storage).
-            cardList = new CardList();
-
-            // Build the view with the card list restrieved.
-            cardListView = new CardListView({
-                modelList: cardList,
-                container: Y.one('.cb-card-list')
-            });
-
-            cardListView.render();
-        }
-
-    }, {
+    Y.namespace('CB').Wallet = Y.Base.create('cb-wallet', Y.Model, [], {}, {
 
         ATTRS: {
 
@@ -108,7 +89,6 @@ YUI.add('cb-wallet', function (Y) {
     requires: [
         'base',
         'model',
-        'cb-card-list',
-        'cb-card-list-view'
+        'cb-card-list'
     ]
 });

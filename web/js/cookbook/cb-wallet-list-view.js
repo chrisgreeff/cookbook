@@ -1,11 +1,11 @@
 /*global YUI*/
-YUI.add('cb-card-list-view', function (Y) {
+YUI.add('cb-wallet-list-view', function (Y) {
     'use strict';
 
-    var Micro = new Y.Template(),
+    var Handlebars = Y.Handlebars,
         Card  = Y.CB.Card,
 
-        _renderCardList,
+        _renderWalletList,
         _renderNoteListItem,
         _renderTodoListItem,
 
@@ -31,34 +31,42 @@ YUI.add('cb-card-list-view', function (Y) {
             dash: 189
         };
 
-    _renderCardList = Micro.compile(
-        '<li class="' + CLASS_NAMES.cardContainer + '">' +
-            '<div class="' + CLASS_NAMES.card + ' ' + CLASS_NAMES.newCard + '">' +
+    _renderWalletList = Handlebars.compile(
+        '<div class="' + CLASS_NAMES.cardContainer + '">' +
+            '<div class="' + CLASS_NAMES.card + ' ' + CLASS_NAMES.newCard + '" tabindex="0">' +
                 'New Card' +
             '</div>' +
-        '</li>' +
-        '<% Y.Array.each(this.cards, function(card) { %>' +
-            '<li class="' + CLASS_NAMES.cardContainer + '">' +
-                '<div tabindex="0" class="' + CLASS_NAMES.card + '" data-id="<%= card.id %>">' +
-                    '<%== card.content %>' +
-                '</div>' +
-            '</li>' +
-        '<% }); %>'
+        '</div>' +
+        '<ul class="' + CLASS_NAMES.walletList + '">' +
+            '{{#each wallets}}' +
+                '<li class="' + CLASS_NAMES.wallet + '" data-date="{{date}}">' +
+                    '<ul class="' + CLASS_NAMES.cardList + '">' +
+                        '{{#each cards}}' +
+                            '<li class="' + CLASS_NAMES.cardContainer + '">' +
+                                '<div class="' + CLASS_NAMES.card + '" data-id="{{id}}" tabindex="0">' +
+                                    '{{{content}}}' +
+                                '</div>' +
+                            '</li>' +
+                        '{{/each}}' +
+                    '</ul>' +
+                '</li>' +
+            '{{/each}}' +
+        '</ul>'
     );
 
-    _renderNoteListItem = Micro.compile(
+    _renderNoteListItem = Handlebars.compile(
         '<ul class="' + CLASS_NAMES.cardNote + '">' +
             '<li></li>' +
         '</ul>'
     );
 
-    _renderTodoListItem = Micro.compile(
+    _renderTodoListItem = Handlebars.compile(
         '<ol class="' + CLASS_NAMES.cardTodo + '">' +
             '<li class="' + CLASS_NAMES.iconUnchecked + ' ' + CLASS_NAMES.cardTodoCheckbox + '">&nbsp;</li>' +
         '</ol>'
     );
 
-    Y.namespace('CB').CardListView = Y.Base.create('cb-card-list-view', Y.View, [], {
+    Y.namespace('CB').WalletListView = Y.Base.create('cb-wallet-list-view', Y.View, [], {
 
         initializer: function () {
             var cardList = this.get('modelList'),
@@ -70,10 +78,11 @@ YUI.add('cb-card-list-view', function (Y) {
         },
 
         render: function () {
-            this.get('container').setHTML(_renderCardList({
-                cards: this.get('modelList').toJSON(),
-                CLASS_NAMES: CLASS_NAMES
-            }));
+            
+            // this.get('container').setHTML(_renderWalletList({
+            //     wallets: this.get('modelList').toJSON(),
+            //     CLASS_NAMES: CLASS_NAMES
+            // }));
 
             return this;
         },
@@ -404,7 +413,7 @@ YUI.add('cb-card-list-view', function (Y) {
         'node-event-simulate',
         'view',
         'yui-later',
-        'template',
+        'handlebars',
         'cb-card-list'
     ]
 });
