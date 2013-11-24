@@ -65,6 +65,43 @@ YUI.add('cb-cookbook', function (Y) {
                 valueFn: function () {
                     return new WalletList();
                 }
+            },
+
+            cards: {
+                setter: function (value) {
+                    var cards,
+                        result;
+
+                    cards = this.get('cards');
+
+                    // If the value passed is already an instance of CardList, destroy the existing and use the
+                    // one passed.
+                    if (value instanceof CardList) {
+                        if (cards) {
+                            cards.destroy();
+                        }
+                        return value;
+                    }
+
+                    // Otherwise reset the CardList with the values passed.
+                    if (Lang.isObject(value)) {
+                        if (cards) {
+                            return cards.reset({
+                                items: value
+                            });
+                        } else {
+                            return new CardList({
+                                items: value
+                            });
+                        }
+                    }
+
+                    return Y.Attribute.INVALID_VALUE;
+                },
+
+                valueFn: function () {
+                    return new CardList();
+                }
             }
 
         }
@@ -75,7 +112,7 @@ YUI.add('cb-cookbook', function (Y) {
     requires: [
         'base',
         'model',
-        'cb-wallet-list',
-        'cb-wallet-list-view'
+        'cb-card-list',
+        'cb-wallet-list'
     ]
 });

@@ -3,15 +3,16 @@ YUI().use(
     'json-parse',
     'cb-cookbook',
 function (Y) {
-    Y.io('mock-data.json', {
+    Y.io('/wallets', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         },
         on: {
             success: function (tx, response) {
-                var cookbookJson = Y.JSON.parse(response.responseText);
-                new Y.CB.Cookbook(cookbookJson);
+                console.log(cookbookJson);
+                // var cookbookJson = Y.JSON.parse(response.responseText);
+                // new Y.CB.Cookbook(cookbookJson);
             },
 
             failure: function (tx, response) {
