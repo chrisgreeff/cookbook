@@ -13,9 +13,9 @@ function (Y) {
             cookbook = new Y.CB.Cookbook(cookbookJson);
 
         new Y.CB.CookbookView({
-            model: cookbook
-        });
-        // Render Cookbook View
+            model: cookbook,
+            container: Y.one('.cb-wallet-list-container')
+        }).render();
     };
 
     Y.io('/cookbook', {

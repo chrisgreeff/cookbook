@@ -19,11 +19,6 @@ YUI.add('cb-cookbook-view', function (Y) {
     );
 
     Y.namespace('CB').CookbookView = Y.Base.create('cb-cookbook-view', Y.View, [], {
-
-        initializer: function () {
-
-        },
-
         render: function () {
             this.get('container').setHTML(_renderCookbook({
                 wallets: this.get('model').get('wallets').toJSON()
@@ -36,6 +31,8 @@ YUI.add('cb-cookbook-view', function (Y) {
 
 }, '1.0.0', {
     requires: [
-        'base', 'handlebars'
+        'base',
+        'handlebars',
+        'view'
     ]
 });
