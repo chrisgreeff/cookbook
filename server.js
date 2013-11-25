@@ -14,6 +14,8 @@ app.configure(function () {
 
 app.use(express.static(__dirname + '/web'));
 
+app.get('/cookbook', cookbook.findAllWalletsAndCards);
+
 // Wallets
 app.get('/wallets', cookbook.findAllWallets);
 app.get('/wallets/:id', cookbook.findWalletById);

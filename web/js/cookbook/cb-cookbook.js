@@ -6,21 +6,7 @@ YUI.add('cb-cookbook', function (Y) {
         WalletList = Y.CB.WalletList,
         WalletListView = Y.CB.WalletListView;
 
-    Y.namespace('CB').Cookbook = Y.Base.create('cb-cookbook', Y.Model, [], {
-
-        initializer: function () {
-            var walletListView;
-
-            // Build the view with the card list restrieved.
-            walletListView = new WalletListView({
-                modelList: this.get('wallets'),
-                container: Y.one('.cb-wallet-list-container')
-            });
-
-            walletListView.render();
-        }
-
-    }, {
+    Y.namespace('CB').Cookbook = Y.Base.create('cb-cookbook', Y.Model, [], {}, {
 
         ATTRS: {
 

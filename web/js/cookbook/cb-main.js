@@ -2,18 +2,29 @@ YUI().use(
     'io-base',
     'json-parse',
     'cb-cookbook',
+    'cb-cookbook-view',
 function (Y) {
-    Y.io('/wallets', {
+    'use strict';
+
+    var getCookbookSuccessHandler;
+
+    getCookbookSuccessHandler = function (tx, response) {
+        var cookbookJson = Y.JSON.parse(response.responseText),
+            cookbook = new Y.CB.Cookbook(cookbookJson);
+
+        new Y.CB.CookbookView({
+            model: cookbook
+        });
+        // Render Cookbook View
+    };
+
+    Y.io('/cookbook', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         },
         on: {
-            success: function (tx, response) {
-                console.log(cookbookJson);
-                // var cookbookJson = Y.JSON.parse(response.responseText);
-                // new Y.CB.Cookbook(cookbookJson);
-            },
+            success: getCookbookSuccessHandler,
 
             failure: function (tx, response) {
                 alert('Crap! Something went wrong in retrieving the data! :(');
