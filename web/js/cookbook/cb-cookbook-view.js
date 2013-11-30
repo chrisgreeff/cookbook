@@ -181,7 +181,8 @@ YUI.add('cb-cookbook-view', function (Y) {
          */
         _switchToViewMode: function () {
             var container = this.get('container'),
-                cardList = this.get('modelList'),
+                cookbook = this.get('model'),
+                cards = cookbook.get('cards'),
                 activeCardNode = this.get('activeCardNode'),
                 activeCardNodeContent = activeCardNode.getHTML(),
                 activeCardNodeText = activeCardNode.get('text'),
@@ -197,20 +198,19 @@ YUI.add('cb-cookbook-view', function (Y) {
                 } else {
                     // @todo destroy wysiwyg node, and re-create new card node.
                 }
-            }
-            // // Existing card.
-            // } else if (cardId) {
-            //     card = cardList.getById(cardId);
+            // Existing card.
+            } else if (cardId) {
+                card = cards.getById(cardId);
 
-            //     // Update card only if the content has changed.
-            //     if (activeCardNodeContent !== card.get('content')) {
-            //         // If there is no text for an existing card, confirm before deletion.
-            //         if (activeCardNodeText || confirm('Bro are you sure...?')) {
-            //             cardList.updateCardContent(card, activeCardNodeContent);
-            //             sortCards = true;
-            //         }
-            //     }
-            // }
+                // Update card only if the content has changed.
+                if (activeCardNodeContent !== card.get('content')) {
+                    // If there is no text for an existing card, confirm before deletion.
+                    if (activeCardNodeText || confirm('Bro are you sure...?')) {
+                        this._updateCardContent(card, activeCardNodeContent);
+                        sortCards = true;
+                    }
+                }
+            }
 
             this._detachEditModeEventHandlers();
             this._attachViewModeEventHandlers();
@@ -223,6 +223,69 @@ YUI.add('cb-cookbook-view', function (Y) {
             // if (sortCards) {
             //     this._sortCardList();
             // }
+        },
+
+        /**
+         * Updates the card's content with that passed.
+         *
+         * @private
+         * @method _updateCardContent
+         * @param  {Model} card The card to update.
+         * @param  {HTML | String} content The content you are updated the card with
+         */
+        _updateCardContent: function (card, content) {
+            var cookbook = this.get('model'),
+                cards = cookbook.get('cards'),
+                cardId = card.get('id'),
+                wallets = cookbook.get('wallets'),
+                index = cards.indexOf(card),
+                now = new Date(),
+                newWalletCards,
+                newWalletId,
+                currentWallet,
+                newWallet;
+
+            cards.remove(card, {
+                silent: true
+            });
+
+            if (content) {
+                currentWallet = wallets.getById(card.get('wallet'));
+
+                // If wallet card belongs to changes, we need to update the card and wallet data.
+                if (this._getSimpleDate(currentWallet.get('date')) !== this._getSimpleDate(card.get('dateLastEdited'))) {
+                    newWallet = wallets.getWalletBySimpleDate(now);
+
+                    if (!newWallet) {
+                        newWalletId = 'wallet-' + Y.guid();
+
+                        newWallet = new Wallet({
+                            date: now,
+                            id: newWalletId,
+                            cards: [cardId]
+                        });
+
+                        wallets.add(newWallet);
+                    } else {
+                        newWalletId = newWallet.get('id');
+                        newWallet.get('cards').push(cardId);
+                    }
+
+                    // TODO: remove cardId from currentWallet's cards array
+                    newWalletCards = newWallet.get('cards');
+                    newWalletCards.splice(newWalletCards.indexOf(cardId), 1);
+
+                    newWallet.set('cards', newWalletCards);
+                    card.set('wallet', newWalletId);
+                }
+
+                card.set('content', content);
+                card.set('dateLastEdited', new Date());
+
+                cards.add(card, {
+                    index: index
+                });
+            }
         },
 
         /**
@@ -264,6 +327,13 @@ YUI.add('cb-cookbook-view', function (Y) {
             }));
         },
 
+        _getSimpleDate: function (date) {
+            var day = date.getDate(),
+                month = date.getMonth() + 1,
+                year = date.getFullYear();
+
+            return day + '/' + month + '/' + year;
+        },
 
         // ================================================================================
         // ================================ EVENT HANDLERS ================================

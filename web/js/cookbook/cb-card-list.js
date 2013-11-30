@@ -17,31 +17,6 @@ YUI.add('cb-card-list', function (Y) {
             return cards;
         },
 
-        /**
-         * Updates the card's content with that passed.
-         *
-         * @method updateCardContent
-         * @param  {Model} card The card to update.
-         * @param  {HTML | String} content The content you are updated the card with
-         */
-        updateCardContent: function (card, content) {
-            var index = this.indexOf(card);
-
-            this.remove(card, {
-                silent: true
-            });
-
-            if (content) {
-                card.set('content', content);
-                card.set('dateLastEdited', new Date());
-
-                this.add(card, {
-                    index: index,
-                    silent: true
-                });
-            }
-        },
-
         // Sorting by dateLastEdited when modelList.sort() is called.
         comparator: function (model) {
             return model.get('dateLastEdited');
