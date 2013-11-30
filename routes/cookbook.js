@@ -268,11 +268,11 @@ exports.deleteCard = function(request, response) {
 populateWalletsDB = function() {
     var wallets = [{
         id: 'wallet-1',
-        date: 'today',
+        date: 'Sun Nov 03 2013 15:12:05 GMT+1300 (NZDT)',
         cards: ['card-1']
     }, {
         id: 'wallet-2',
-        date: 'yesterday',
+        date: 'Wed Nov 06 2013 22:44:04 GMT+1300 (NZDT)',
         cards: ['card-2', 'card-3']
     }];
 

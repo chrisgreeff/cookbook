@@ -5,6 +5,18 @@ YUI.add('cb-card-list', function (Y) {
     Y.namespace('CB').CardList = Y.Base.create('cb-card-list', Y.ModelList, [], {
         model: Y.CB.Card,
 
+        getByWalletId: function (walletId) {
+            var cards = [];
+
+            this.each(function (card) {
+                if (card.get('wallet') === walletId) {
+                    cards.push(card.toJSON());
+                }
+            });
+
+            return cards;
+        },
+
         /**
          * Updates the card's content with that passed.
          *
@@ -21,7 +33,7 @@ YUI.add('cb-card-list', function (Y) {
 
             if (content) {
                 card.set('content', content);
-                card.set('dateLastEdited', Date.now());
+                card.set('dateLastEdited', new Date());
 
                 this.add(card, {
                     index: index,

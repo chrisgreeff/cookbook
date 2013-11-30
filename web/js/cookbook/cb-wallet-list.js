@@ -19,6 +19,20 @@ YUI.add('cb-wallet-list', function (Y) {
             return result;
         },
 
+        getWalletBySimpleDate: function (date) {
+            var simpleDate = this._getSimpleDate(date),
+                result;
+
+            this.some(function (wallet) {
+                if (this._getSimpleDate(wallet.get('date')) === simpleDate) {
+                    result = wallet;
+                    return true;
+                }
+            }, this);
+
+            return result;
+        },
+
         // Sorting by dateLastEdited when modelList.sort() is called.
         comparator: function (model) {
             return model.get('date');
@@ -26,6 +40,14 @@ YUI.add('cb-wallet-list', function (Y) {
 
         _compare: function (a, b) {
             return a < b ? 1 : (a > b ? -1 : 0);
+        },
+
+        _getSimpleDate: function (date) {
+            var day = date.getDate(),
+                month = date.getMonth() + 1,
+                year = date.getFullYear();
+
+            return day + '/' + month + '/' + year;
         }
 
     });

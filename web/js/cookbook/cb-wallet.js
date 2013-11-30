@@ -2,6 +2,8 @@
 YUI.add('cb-wallet', function (Y) {
     'use strict';
 
+    var Lang = Y.Lang;
+
     Y.namespace('CB').Wallet = Y.Base.create('cb-wallet', Y.Model, [], {}, {
 
         ATTRS: {
@@ -20,7 +22,12 @@ YUI.add('cb-wallet', function (Y) {
              * @attribute date
              * @type {Date | String}
              */
-            date: {}
+            date: {
+                setter: function (value) {
+                    return Lang.isDate(value) ? value :  new Date(value);
+                },
+                writeOnce: 'initOnly'
+            }
 
         }
 
