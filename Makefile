@@ -9,7 +9,7 @@ install-mongo:
 install-npm-modules:
 	npm install
 
-start-db:
+db:
 	/usr/local/mongodb/bin/mongod
 
 start-cb:

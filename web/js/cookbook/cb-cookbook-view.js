@@ -26,6 +26,7 @@ YUI.add('cb-cookbook-view', function (Y) {
             iconUnchecked: 'cb-card-todo--icon-checkbox-unchecked',
             iconChecked: 'cb-card-todo--icon-checkbox-checked',
             wallet: 'cb-wallet',
+            walletDate: 'cb-wallet-date',
             walletList: 'cb-wallet-list'
         },
 
@@ -47,21 +48,24 @@ YUI.add('cb-cookbook-view', function (Y) {
         '</div>' +
         '<ul class="' + CLASS_NAMES.walletList + '">' +
             '{{#each wallets}}' +
-                '<li class="' + CLASS_NAMES.wallet + '" data-date="{{date}}"></li>' +
+                '<li class="' + CLASS_NAMES.wallet + '" data-date="{{date}}">' +
+                    '<div class="' + CLASS_NAMES.walletDate + '">' +
+                        '{{date}}' +
+                    '</div>' +
+                    '<ul class="' + CLASS_NAMES.cardList + '"></ul>' +
+                '</li>' +
             '{{/each}}' +
         '</ul>'
     );
 
     _renderCardList = Handlebars.compile(
-        '<ul class="' + CLASS_NAMES.cardList + '">' +
-            '{{#each cards}}' +
-                '<li class="' + CLASS_NAMES.cardContainer + '">' +
-                    '<div tabindex="0" class="' + CLASS_NAMES.card + '" data-id="{{id}}">' +
-                        '{{{content}}}' +
-                    '</div>' +
-                '</li>' +
-            '{{/each}}' +
-        '</ul>'
+        '{{#each cards}}' +
+            '<li class="' + CLASS_NAMES.cardContainer + '">' +
+                '<div tabindex="0" class="' + CLASS_NAMES.card + '" data-id="{{id}}">' +
+                    '{{{content}}}' +
+                '</div>' +
+            '</li>' +
+        '{{/each}}'
     );
 
     _renderNoteListItem = Handlebars.compile(
@@ -99,9 +103,9 @@ YUI.add('cb-cookbook-view', function (Y) {
             wallets.each(function (wallet) {
                 var date               = wallet.get('date'),
                     walletNode         = container.one('.' + CLASS_NAMES.wallet + '[data-date="' + date + '"]'),
-                    currentWalletCards = cards.getByWalletId(wallet.get('id'));;
+                    currentWalletCards = cards.getByWalletId(wallet.get('id'));
 
-                walletNode.setHTML(_renderCardList({
+                walletNode.one('.' + CLASS_NAMES.cardList).setHTML(_renderCardList({
                     cards: currentWalletCards
                 }));
             });
