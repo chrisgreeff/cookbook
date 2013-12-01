@@ -44,7 +44,12 @@ YUI.add('cb-cookbook-controller', function (Y) {
                 headers: DEFAULT_HEADERS,
                 data: JSON.stringify(wallet.toJSON()),
                 on: {
-                    success: config.successHandler || DEFAULT_SUCCESS_HANDLER,
+                    success: function (tx, response) {
+                        config.successHandler({
+                            model: wallet,
+                            response: response
+                        });
+                    },
                     failure: config.errorHandler || DEFAULT_ERROR_HANDLER
                 }
             });
@@ -87,7 +92,7 @@ YUI.add('cb-cookbook-controller', function (Y) {
                 on: {
                     success: function (tx, response) {
                         config.successHandler({
-                            card: card,
+                            model: card,
                             response: response
                         });
                     },

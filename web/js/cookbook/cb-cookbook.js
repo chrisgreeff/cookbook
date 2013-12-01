@@ -2,10 +2,10 @@
 YUI.add('cb-cookbook', function (Y) {
     'use strict';
 
-    var Lang = Y.Lang,
-        CB = Y.CB,
+    var Lang       = Y.Lang,
+        CB         = Y.CB,
         WalletList = CB.WalletList,
-        CardList = CB.CardList;
+        CardList   = CB.CardList;
 
     Y.namespace('CB').Cookbook = Y.Base.create('cb-cookbook', Y.Model, [], {}, {
 

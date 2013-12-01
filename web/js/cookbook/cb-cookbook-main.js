@@ -1,10 +1,5 @@
-YUI().use(
-    'io-base',
-    'json-parse',
-    'cb-cookbook-controller',
-    'cb-cookbook',
-    'cb-cookbook-view',
-function (Y) {
+/*global YUI*/
+YUI().use('io-base', 'json-parse', 'cb-cookbook-controller', 'cb-cookbook', 'cb-cookbook-view', function (Y) {
     'use strict';
 
     var Controller = Y.CB.Controller,
@@ -12,7 +7,7 @@ function (Y) {
 
     getCookbookSuccessHandler = function (tx, response) {
         var cookbookJson = Y.JSON.parse(response.responseText),
-            cookbook = new Y.CB.Cookbook(cookbookJson);
+            cookbook     = new Y.CB.Cookbook(cookbookJson);
 
         new Y.CB.CookbookView({
             model: cookbook,

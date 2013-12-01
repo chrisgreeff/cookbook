@@ -5,6 +5,13 @@ YUI.add('cb-card-list', function (Y) {
     Y.namespace('CB').CardList = Y.Base.create('cb-card-list', Y.ModelList, [], {
         model: Y.CB.Card,
 
+        /**
+         * Returns all the cards that belong to a specified wallet.
+         *
+         * @method getByWalletId
+         * @param  {String} walletId The id of the specified wallet.
+         * @return {Array} The list of cards that belong to the specified wallet.
+         */
         getByWalletId: function (walletId) {
             var cards = [];
 

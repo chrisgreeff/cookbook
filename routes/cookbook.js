@@ -1,7 +1,7 @@
-var mongo = require('mongodb'),
+var mongo  = require('mongodb'),
     Server = mongo.Server,
-    Db = mongo.Db,
-    BSON = mongo.BSONPure,
+    Db     = mongo.Db,
+    BSON   = mongo.BSONPure,
     server,
     db,
     populateDb;

@@ -7,7 +7,7 @@ YUI.add('cb-wallet-list', function (Y) {
 
         getWalletByDate: function (date) {
             var dateValue = (typeof date === 'string') ? date : date.toString(),
-                result = null;
+                result    = null;
 
             this.some(function (wallet) {
                 if (wallet.get('date').toString() === dateValue) {
@@ -43,9 +43,9 @@ YUI.add('cb-wallet-list', function (Y) {
         },
 
         _getSimpleDate: function (date) {
-            var day = date.getDate(),
+            var day   = date.getDate(),
                 month = date.getMonth() + 1,
-                year = date.getFullYear();
+                year  = date.getFullYear();
 
             return day + '/' + month + '/' + year;
         }

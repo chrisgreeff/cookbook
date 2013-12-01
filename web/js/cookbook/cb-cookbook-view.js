@@ -3,11 +3,11 @@ YUI.add('cb-cookbook-view', function (Y) {
     'use strict';
 
     var Handlebars = Y.Handlebars,
-        JSON = Y.JSON,
-        CB = Y.CB,
+        JSON       = Y.JSON,
+        CB         = Y.CB,
         Controller = CB.Controller,
-        Card = CB.Card,
-        Wallet = CB.Wallet,
+        Card       = CB.Card,
+        Wallet     = CB.Wallet,
 
         _renderWalletList,
         _renderCardList,
@@ -80,7 +80,7 @@ YUI.add('cb-cookbook-view', function (Y) {
 
         initializer: function () {
             var cookbook = this.get('model'),
-                cards = cookbook.get('cards');
+                cards    = cookbook.get('cards');
 
             cards.after(['add', 'remove', 'reset'], this.render, this);
             this._attachViewModeEventHandlers();
@@ -88,21 +88,19 @@ YUI.add('cb-cookbook-view', function (Y) {
 
         render: function () {
             var container = this.get('container'),
-                cookbook = this.get('model'),
-                wallets = cookbook.get('wallets'),
-                cards = cookbook.get('cards');
+                cookbook  = this.get('model'),
+                wallets   = cookbook.get('wallets'),
+                cards     = cookbook.get('cards');
 
             container.setHTML(_renderWalletList({
                 wallets: wallets.toJSON()
             }));
 
             wallets.each(function (wallet) {
-                var date = wallet.get('date'),
-                    walletNode = container.one('.' + CLASS_NAMES.wallet + '[data-date="' + date + '"]'),
-                    currentWalletCards;
+                var date               = wallet.get('date'),
+                    walletNode         = container.one('.' + CLASS_NAMES.wallet + '[data-date="' + date + '"]'),
+                    currentWalletCards = cards.getByWalletId(wallet.get('id'));;
 
-                // Filter out cards that belong to this wallet.
-                currentWalletCards = cards.getByWalletId(wallet.get('id'));
                 walletNode.setHTML(_renderCardList({
                     cards: currentWalletCards
                 }));
@@ -198,21 +196,19 @@ YUI.add('cb-cookbook-view', function (Y) {
          * @method _switchToViewMode
          */
         _switchToViewMode: function () {
-            var container = this.get('container'),
-                cookbook = this.get('model'),
-                cards = cookbook.get('cards'),
-                activeCardNode = this.get('activeCardNode'),
+            var container             = this.get('container'),
+                cookbook              = this.get('model'),
+                activeCardNode        = this.get('activeCardNode'),
                 activeCardNodeContent = activeCardNode.getHTML(),
-                activeCardNodeText = activeCardNode.get('text'),
-                cardId = activeCardNode.getData('id'),
-                sortCards = false,
+                activeCardNodeText    = activeCardNode.get('text'),
+                cardId                = activeCardNode.getData('id'),
+                cards                 = cookbook.get('cards'),
                 card;
 
             // // New card with non-html content. Create and save model.
             if (!cardId) {
                 if (activeCardNodeText) {
                     this._createAndSaveNewCard(activeCardNodeContent);
-                    sortCards = true;
                 } else {
                     // @todo destroy wysiwyg node, and re-create new card node.
                 }
@@ -225,7 +221,6 @@ YUI.add('cb-cookbook-view', function (Y) {
                     // If there is no text for an existing card, confirm before deletion.
                     if (activeCardNodeText || confirm('Bro are you sure...?')) {
                         this._updateCardContent(card, activeCardNodeContent);
-                        sortCards = true;
                     }
                 }
             }
@@ -236,11 +231,6 @@ YUI.add('cb-cookbook-view', function (Y) {
             activeCardNode.removeClass(CLASS_NAMES.cardEditing);
 
             this.set('activeCardNode', null);
-
-            // Sort list on addition of new card
-            // if (sortCards) {
-            //     this._sortCardList();
-            // }
         },
 
         /**
@@ -253,11 +243,11 @@ YUI.add('cb-cookbook-view', function (Y) {
          */
         _updateCardContent: function (card, content) {
             var cookbook = this.get('model'),
-                cards = cookbook.get('cards'),
-                cardId = card.get('id'),
-                wallets = cookbook.get('wallets'),
-                index = cards.indexOf(card),
-                now = new Date(),
+                cards    = cookbook.get('cards'),
+                cardId   = card.get('id'),
+                wallets  = cookbook.get('wallets'),
+                index    = cards.indexOf(card),
+                now      = new Date(),
                 newWalletCards,
                 newWalletId,
                 currentWallet,
@@ -286,7 +276,8 @@ YUI.add('cb-cookbook-view', function (Y) {
                         wallets.add(newWallet);
 
                         Controller.addWallet({
-                            wallet: newWallet
+                            wallet: newWallet,
+                            successHandler: this._addModelSuccessHandler
                         });
                     } else {
                         newWalletId = newWallet.get('id');
@@ -363,7 +354,8 @@ YUI.add('cb-cookbook-view', function (Y) {
                 wallets.add(wallet);
 
                 Controller.addWallet({
-                    wallet: wallet
+                    wallet: wallet,
+                    successHandler: this._addModelSuccessHandler
                 });
             } else {
                 walletId = wallet.get('id');
@@ -381,14 +373,14 @@ YUI.add('cb-cookbook-view', function (Y) {
 
             Controller.addCard({
                 card: card,
-                successHandler: this._addCardSuccessHandler
+                successHandler: this._addModelSuccessHandler
             });
         },
 
         _getSimpleDate: function (date) {
-            var day = date.getDate(),
+            var day   = date.getDate(),
                 month = date.getMonth() + 1,
-                year = date.getFullYear();
+                year  = date.getFullYear();
 
             return day + '/' + month + '/' + year;
         },
@@ -420,8 +412,8 @@ YUI.add('cb-cookbook-view', function (Y) {
          */
         _getCardForEditMode: function (event) {
             var targetNode = event.target,
-                cardClass = CLASS_NAMES.card,
-                cardNode = null;
+                cardClass  = CLASS_NAMES.card,
+                cardNode   = null;
 
             if (!targetNode.hasClass(CLASS_NAMES.cardTodoCheckbox)) {
                 cardNode = targetNode.hasClass(cardClass) ? targetNode : targetNode.ancestor('.' + cardClass);
@@ -468,9 +460,9 @@ YUI.add('cb-cookbook-view', function (Y) {
          * @param  {Event} keydown event
          */
         _keydownStrokeListener: function (event) {
-            var keyCode = event.keyCode,
+            var keyCode            = event.keyCode,
+                firstChar          = this.get('firstChar'),
                 textCursorPosition = window.getSelection().extentOffset,
-                firstChar = this.get('firstChar'),
                 oldContent,
                 cardId;
 
@@ -522,18 +514,11 @@ YUI.add('cb-cookbook-view', function (Y) {
         // =============================== SUCCESS HANDLERS ===============================
         // ================================================================================
 
-        _addCardSuccessHandler: function (config) {
-            var card = config.card,
-                _id = JSON.parse(config.response.responseText)._id;
+        _addModelSuccessHandler: function (config) {
+            var model = config.model,
+                _id   = JSON.parse(config.response.responseText)._id;
 
-            card.set('_id', _id);
-        },
-
-        _addWalletSuccessHandler: function (config) {
-            var wallet = config.wallet,
-                _id = JSON.parse(config.response.responseText)._id;
-
-            wallet.set('_id', _id);
+            model.set('_id', _id);
         }
 
     }, {
