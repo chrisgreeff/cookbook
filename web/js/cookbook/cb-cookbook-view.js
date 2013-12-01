@@ -3,6 +3,7 @@ YUI.add('cb-cookbook-view', function (Y) {
     'use strict';
 
     var Handlebars = Y.Handlebars,
+        Lang       = Y.Lang,
         JSON       = Y.JSON,
         CB         = Y.CB,
         Controller = CB.Controller,
@@ -11,6 +12,7 @@ YUI.add('cb-cookbook-view', function (Y) {
 
         _renderWalletList,
         _renderCardList,
+        _renderWalletDate,
         _renderNoteListItem,
         _renderTodoListItem,
 
@@ -27,6 +29,8 @@ YUI.add('cb-cookbook-view', function (Y) {
             iconChecked: 'cb-card-todo--icon-checkbox-checked',
             wallet: 'cb-wallet',
             walletDate: 'cb-wallet-date',
+            walletDateDay: 'cb-wallet-date-day',
+            walletDateMonth: 'cb-wallet-date-month',
             walletList: 'cb-wallet-list'
         },
 
@@ -38,7 +42,22 @@ YUI.add('cb-cookbook-view', function (Y) {
             n: 78,
             equals: 187,
             dash: 189
-        };
+        },
+
+        MONTHS = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec'
+        ];
 
     _renderWalletList = Handlebars.compile(
         '<div class="' + CLASS_NAMES.cardContainer + '">' +
@@ -50,7 +69,7 @@ YUI.add('cb-cookbook-view', function (Y) {
             '{{#each wallets}}' +
                 '<li class="' + CLASS_NAMES.wallet + '" data-date="{{date}}">' +
                     '<div class="' + CLASS_NAMES.walletDate + '">' +
-                        '{{date}}' +
+                        '{{{format-date date}}}' +
                     '</div>' +
                     '<ul class="' + CLASS_NAMES.cardList + '"></ul>' +
                 '</li>' +
@@ -68,6 +87,15 @@ YUI.add('cb-cookbook-view', function (Y) {
         '{{/each}}'
     );
 
+    _renderWalletDate = Handlebars.compile(
+        '<div class="' + CLASS_NAMES.walletDateDay + '">' +
+            '{{day}}' +
+        '</div>' +
+        '<div class="' + CLASS_NAMES.walletDateMonth + '">' +
+            '{{month}}' +
+        '</div>'
+    );
+
     _renderNoteListItem = Handlebars.compile(
         '<ul class="' + CLASS_NAMES.cardNote + '">' +
             '<li></li>' +
@@ -79,6 +107,15 @@ YUI.add('cb-cookbook-view', function (Y) {
             '<li class="' + CLASS_NAMES.iconUnchecked + ' ' + CLASS_NAMES.cardTodoCheckbox + '">&nbsp;</li>' +
         '</ol>'
     );
+
+    Handlebars.registerHelper('format-date', function (date) {
+        var date = Lang.isDate(date) ? date : new Date(date);
+
+        return _renderWalletDate({
+            day: date.getDate(),
+            month: MONTHS[date.getMonth()]
+        });
+    });
 
     Y.namespace('CB').CookbookView = Y.Base.create('cb-cookbook-view', Y.View, [], {
 
