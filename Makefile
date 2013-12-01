@@ -12,6 +12,9 @@ install-npm-modules:
 db:
 	/usr/local/mongodb/bin/mongod
 
+drop-db:
+	/usr/local/mongodb/bin/mongo cookbookdb --eval "db.dropDatabase()"
+
 start-cb:
 	node server.js
 

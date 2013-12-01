@@ -292,15 +292,16 @@ YUI.add('cb-cookbook-view', function (Y) {
                 newWalletCards,
                 newWalletId,
                 currentWallet,
+                currentWalletCards,
                 newWallet;
 
             cards.remove(card, {
                 silent: true
             });
 
-            if (content) {
-                currentWallet = wallets.getById(card.get('wallet'));
+            currentWallet = wallets.getById(card.get('wallet'));
 
+            if (content) {
                 // If wallet card belongs to changes, we need to update the card and wallet data.
                 if (this._getSimpleDate(currentWallet.get('date')) !== this._getSimpleDate(now)) {
                     newWallet = wallets.getWalletBySimpleDate(now);
@@ -358,6 +359,21 @@ YUI.add('cb-cookbook-view', function (Y) {
                     card: card
                 });
             } else {
+                currentWalletCards = currentWallet.get('cards');
+                currentWalletCards.splice(currentWalletCards.indexOf(cardId), 1);
+
+                if (currentWalletCards.length) {
+                    currentWallet.set('cards', currentWalletCards);
+                    Controller.updateWallet({
+                        wallet: currentWallet
+                    });
+                }  else {
+                    Controller.deleteWallet({
+                        wallet: currentWallet
+                    });
+                    currentWallet.destroy();
+                }
+
                 Controller.deleteCard({
                     card: card
                 });
