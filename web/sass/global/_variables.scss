@@ -21,36 +21,6 @@ $page-main-background-color: #F1F1F1;
 
 
 // ----------------------------------------------------------
-// ========================== Card ==========================
-// ----------------------------------------------------------
-
-// Display Box Model
-$card-list-container-vertical-padding: 20px;
-$card-list-container-horizontal-padding: 40px;
-$card-horizontal-padding: 30px;
-$card-vertical-padding: 30px;
-$card-margin-bottom: 20px;
-$card-new-vertical-padding: 15px;
-$card-note-padding-left: 30px;
-$card-todo-padding-left: 7px;
-$card-todo-checkbox-margin-top: 0;
-$card-todo-checkbox-margin-right: 7px;
-
-// Typography
-$card-font-weight: 300;
-
-// Colours
-$card-background-color: #FFF;
-$card-outline-focus-color: #F92770;
-$card-new-text-color: #BEBEBE;
-$card-editing-text-color: #000000;
-$card-todo-checkbox-checked-color: #BEBEBE;
-
-// Shadow
-$card-editing-box-shadow: 0px 0px 10px #EEEEEE;
-
-
-// ----------------------------------------------------------
 // ======================== Shortcut ========================
 // ----------------------------------------------------------
 
@@ -69,3 +39,37 @@ $shortcut-button-text-color: #F5276F;
 $shortcut-box-shadow: 0px 0px 5px #BEBEBE;
 
 
+// ----------------------------------------------------------
+// ========================== Wallet ==========================
+// ----------------------------------------------------------
+
+$wallet-list-container-vertical-padding: 20px;
+$wallet-list-container-horizontal-padding: 40px;
+
+
+// ----------------------------------------------------------
+// ========================== Card ==========================
+// ----------------------------------------------------------
+
+// Display Box Model
+$card-horizontal-padding: 30px;
+$card-vertical-padding: 30px;
+$card-margin-bottom: 20px;
+$card-new-vertical-padding: 15px;
+$card-note-padding-left: 30px;
+$card-todo-padding-left: 7px;
+$card-todo-checkbox-margin-top: 0;
+$card-todo-checkbox-margin-right: 7px;
+
+// Typography
+$card-font-weight: 300;
+
+// Colours
+$card-background-color: #FFF;
+$card-outline-focus-color: #F92770;
+$card-new-text-color: #BEBEBE;
+$card-active-text-color: #000000;
+$card-todo-checkbox-checked-color: #BEBEBE;
+
+// Shadow
+$card-active-box-shadow: 0px 0px 10px #EEEEEE;

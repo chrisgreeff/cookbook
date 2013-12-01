@@ -5,29 +5,16 @@ YUI.add('cb-card-list', function (Y) {
     Y.namespace('CB').CardList = Y.Base.create('cb-card-list', Y.ModelList, [], {
         model: Y.CB.Card,
 
-        /**
-         * Updates the card's content with that passed.
-         *
-         * @method updateCardContent
-         * @param  {Model} card The card to update.
-         * @param  {HTML | String} content The content you are updated the card with
-         */
-        updateCardContent: function (card, content) {
-            var index = this.indexOf(card);
+        getByWalletId: function (walletId) {
+            var cards = [];
 
-            this.remove(card, {
-                silent: true
+            this.each(function (card) {
+                if (card.get('wallet') === walletId) {
+                    cards.push(card.toJSON());
+                }
             });
 
-            if (content) {
-                card.set('content', content);
-                card.set('dateLastEdited', Date.now());
-
-                this.add(card, {
-                    index: index,
-                    silent: true
-                });
-            }
+            return cards;
         },
 
         // Sorting by dateLastEdited when modelList.sort() is called.

@@ -3,28 +3,57 @@ YUI.add('cb-cookbook', function (Y) {
     'use strict';
 
     var Lang = Y.Lang,
-        CardList = Y.CB.CardList,
-        CardListView = Y.CB.CardListView;
+        CB = Y.CB,
+        WalletList = CB.WalletList,
+        CardList = CB.CardList;
 
-    Y.namespace('CB').Cookbook = Y.Base.create('cb-cookbook', Y.Model, [], {
-        initializer: function () {
-            var cardList,
-                cardListView;
+    Y.namespace('CB').Cookbook = Y.Base.create('cb-cookbook', Y.Model, [], {}, {
 
-            // Create Model List
-            // @todo this will need to be retrieved and build from a database (local storage).
-            cardList = new CardList();
-
-            // Build the view with the card list restrieved.
-            cardListView = new CardListView({
-                modelList: cardList,
-                container: Y.one('.cb-card-list')
-            });
-
-            cardListView.render();
-        }
-    }, {
         ATTRS: {
+
+            /**
+             * The wallets that belong to the cookbook
+             *
+             * @attribute wallets
+             * @type {WalletList}
+             */
+            wallets: {
+                setter: function (value) {
+                    var wallets,
+                        result;
+
+                    wallets = this.get('wallets');
+
+                    // If the value passed is already an instance of WalletList, destroy the existing and use the
+                    // one passed.
+                    if (value instanceof WalletList) {
+                        if (wallets) {
+                            wallets.destroy();
+                        }
+                        return value;
+                    }
+
+                    // Otherwise reset the WalletList with the values passed.
+                    if (Lang.isObject(value)) {
+                        if (wallets) {
+                            return wallets.reset({
+                                items: value
+                            });
+                        } else {
+                            return new WalletList({
+                                items: value
+                            });
+                        }
+                    }
+
+                    return Y.Attribute.INVALID_VALUE;
+                },
+
+                valueFn: function () {
+                    return new WalletList();
+                }
+            },
+
             cards: {
                 setter: function (value) {
                     var cards,
@@ -43,9 +72,15 @@ YUI.add('cb-cookbook', function (Y) {
 
                     // Otherwise reset the CardList with the values passed.
                     if (Lang.isObject(value)) {
-                        result = cards || new CardList();
-                        result.reset(value);
-                        return result;
+                        if (cards) {
+                            return cards.reset({
+                                items: value
+                            });
+                        } else {
+                            return new CardList({
+                                items: value
+                            });
+                        }
                     }
 
                     return Y.Attribute.INVALID_VALUE;
@@ -55,15 +90,16 @@ YUI.add('cb-cookbook', function (Y) {
                     return new CardList();
                 }
             }
+
         }
+
     });
 
 }, '1.0.0', {
     requires: [
         'base',
         'model',
-        'cb-card',
         'cb-card-list',
-        'cb-card-list-view'
+        'cb-wallet-list'
     ]
 });

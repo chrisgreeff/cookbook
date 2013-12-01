@@ -2,6 +2,8 @@
 YUI.add('cb-card', function (Y) {
     'use strict';
 
+    var Lang = Y.Lang;
+
     Y.namespace('CB').Card = Y.Base.create('cb-card', Y.Model, [], {}, {
 
         ATTRS: {
@@ -20,7 +22,11 @@ YUI.add('cb-card', function (Y) {
              * @attribute dateLastEdited
              * @type {Date}
              */
-            dateLastEdited: {},
+            dateLastEdited: {
+                setter: function (value) {
+                    return Lang.isDate(value) ? value :  new Date(value);
+                }
+            },
 
             /**
              * The date the card was created.
@@ -29,8 +35,19 @@ YUI.add('cb-card', function (Y) {
              * @type {Date}
              */
             dateCreated: {
+                setter: function (value) {
+                    return Lang.isDate(value) ? value :  new Date(value);
+                },
                 writeOnce: 'initOnly'
-            }
+            },
+
+            /**
+             * The wallet id this card belongs to.
+             *
+             * @attribute wallet
+             * @type {String}
+             */
+            wallet: {}
 
         }
 

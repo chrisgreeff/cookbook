@@ -1,24 +1,32 @@
 /*global YUI*/
-YUI.add('cb-card-list-view', function (Y) {
+YUI.add('cb-cookbook-view', function (Y) {
     'use strict';
 
-    var Micro = new Y.Template(),
-        Card  = Y.CB.Card,
+    var Handlebars = Y.Handlebars,
+        JSON = Y.JSON,
+        CB = Y.CB,
+        Controller = CB.Controller,
+        Card = CB.Card,
+        Wallet = CB.Wallet,
 
+        _renderWalletList,
         _renderCardList,
         _renderNoteListItem,
         _renderTodoListItem,
 
         CLASS_NAMES = {
             card: 'cb-card',
-            cardContainer: 'cb-card-container',
             cardEditing: 'cb-card-editing',
+            cardContainer: 'cb-card-container',
+            cardList: 'cb-card-list',
+            cardNew: 'cb-card-new',
             cardTodoCheckbox: 'cb-card-todo--checkbox',
             cardNote: 'cb-card-note',
             cardTodo: 'cb-card-todo',
-            newCard: 'cb-card-new',
             iconUnchecked: 'cb-card-todo--icon-checkbox-unchecked',
-            iconChecked: 'cb-card-todo--icon-checkbox-checked'
+            iconChecked: 'cb-card-todo--icon-checkbox-checked',
+            wallet: 'cb-wallet',
+            walletList: 'cb-wallet-list'
         },
 
         KEY_CODES = {
@@ -31,51 +39,74 @@ YUI.add('cb-card-list-view', function (Y) {
             dash: 189
         };
 
-    _renderCardList = Micro.compile(
-        '<li class="' + CLASS_NAMES.cardContainer + '">' +
-            '<div class="' + CLASS_NAMES.card + ' ' + CLASS_NAMES.newCard + '">' +
+    _renderWalletList = Handlebars.compile(
+        '<div class="' + CLASS_NAMES.cardContainer + '">' +
+            '<div class="' + CLASS_NAMES.card + ' ' + CLASS_NAMES.cardNew + '">' +
                 'New Card' +
             '</div>' +
-        '</li>' +
-        '<% Y.Array.each(this.cards, function(card) { %>' +
-            '<li class="' + CLASS_NAMES.cardContainer + '">' +
-                '<div tabindex="0" class="' + CLASS_NAMES.card + '" data-id="<%= card.id %>">' +
-                    '<%== card.content %>' +
-                '</div>' +
-            '</li>' +
-        '<% }); %>'
+        '</div>' +
+        '<ul class="' + CLASS_NAMES.walletList + '">' +
+            '{{#each wallets}}' +
+                '<li class="' + CLASS_NAMES.wallet + '" data-date="{{date}}"></li>' +
+            '{{/each}}' +
+        '</ul>'
     );
 
-    _renderNoteListItem = Micro.compile(
+    _renderCardList = Handlebars.compile(
+        '<ul class="' + CLASS_NAMES.cardList + '">' +
+            '{{#each cards}}' +
+                '<li class="' + CLASS_NAMES.cardContainer + '">' +
+                    '<div tabindex="0" class="' + CLASS_NAMES.card + '" data-id="{{id}}">' +
+                        '{{{content}}}' +
+                    '</div>' +
+                '</li>' +
+            '{{/each}}' +
+        '</ul>'
+    );
+
+    _renderNoteListItem = Handlebars.compile(
         '<ul class="' + CLASS_NAMES.cardNote + '">' +
             '<li></li>' +
         '</ul>'
     );
 
-    _renderTodoListItem = Micro.compile(
+    _renderTodoListItem = Handlebars.compile(
         '<ol class="' + CLASS_NAMES.cardTodo + '">' +
             '<li class="' + CLASS_NAMES.iconUnchecked + ' ' + CLASS_NAMES.cardTodoCheckbox + '">&nbsp;</li>' +
         '</ol>'
     );
 
-    Y.namespace('CB').CardListView = Y.Base.create('cb-card-list-view', Y.View, [], {
+    Y.namespace('CB').CookbookView = Y.Base.create('cb-cookbook-view', Y.View, [], {
 
         initializer: function () {
-            var cardList = this.get('modelList'),
-                container = this.get('container');
+            var cookbook = this.get('model'),
+                cards = cookbook.get('cards');
 
-            cardList.after(['add', 'remove', 'reset'], this.render, this);
-
+            cards.after(['add', 'remove', 'reset'], this.render, this);
             this._attachViewModeEventHandlers();
         },
 
         render: function () {
-            this.get('container').setHTML(_renderCardList({
-                cards: this.get('modelList').toJSON(),
-                CLASS_NAMES: CLASS_NAMES
+            var container = this.get('container'),
+                cookbook = this.get('model'),
+                wallets = cookbook.get('wallets'),
+                cards = cookbook.get('cards');
+
+            container.setHTML(_renderWalletList({
+                wallets: wallets.toJSON()
             }));
 
-            return this;
+            wallets.each(function (wallet) {
+                var date = wallet.get('date'),
+                    walletNode = container.one('.' + CLASS_NAMES.wallet + '[data-date="' + date + '"]'),
+                    currentWalletCards;
+
+                // Filter out cards that belong to this wallet.
+                currentWalletCards = cards.getByWalletId(wallet.get('id'));
+                walletNode.setHTML(_renderCardList({
+                    cards: currentWalletCards
+                }));
+            });
         },
 
         // ================================================================================
@@ -143,7 +174,6 @@ YUI.add('cb-card-list-view', function (Y) {
          * @param  {Node} cardNode The card to switch to edit mode
          */
         _switchToEditMode: function (cardNode) {
-            this.get('modelList').set('mode', 'edit');
             this.set('activeCardNode', cardNode);
 
             // If there is no id set on the card node, clear the placeholder text.
@@ -156,6 +186,7 @@ YUI.add('cb-card-list-view', function (Y) {
 
             // Enhance the card node for editing
             cardNode.addClass(CLASS_NAMES.cardEditing);
+            cardNode.removeClass(CLASS_NAMES.cardNew);
             $(cardNode.getDOMNode()).wysiwyg();
             cardNode.focus();
         },
@@ -168,33 +199,33 @@ YUI.add('cb-card-list-view', function (Y) {
          */
         _switchToViewMode: function () {
             var container = this.get('container'),
-                cardList = this.get('modelList'),
+                cookbook = this.get('model'),
+                cards = cookbook.get('cards'),
                 activeCardNode = this.get('activeCardNode'),
                 activeCardNodeContent = activeCardNode.getHTML(),
                 activeCardNodeText = activeCardNode.get('text'),
                 cardId = activeCardNode.getData('id'),
-                addition = false,
+                sortCards = false,
                 card;
 
-            // New card with non-html content. Create and save model.
+            // // New card with non-html content. Create and save model.
             if (!cardId) {
                 if (activeCardNodeText) {
-                    this._createAndSaveCard(activeCardNodeContent);
-                    addition = true;
+                    this._createAndSaveNewCard(activeCardNodeContent);
+                    sortCards = true;
                 } else {
                     // @todo destroy wysiwyg node, and re-create new card node.
                 }
-
             // Existing card.
             } else if (cardId) {
-                card = cardList.getById(cardId);
+                card = cards.getById(cardId);
 
                 // Update card only if the content has changed.
                 if (activeCardNodeContent !== card.get('content')) {
                     // If there is no text for an existing card, confirm before deletion.
                     if (activeCardNodeText || confirm('Bro are you sure...?')) {
-                        cardList.updateCardContent(card, activeCardNodeContent);
-                        addition = true;
+                        this._updateCardContent(card, activeCardNodeContent);
+                        sortCards = true;
                     }
                 }
             }
@@ -207,8 +238,99 @@ YUI.add('cb-card-list-view', function (Y) {
             this.set('activeCardNode', null);
 
             // Sort list on addition of new card
-            if (addition) {
-                this._sortCardList();
+            // if (sortCards) {
+            //     this._sortCardList();
+            // }
+        },
+
+        /**
+         * Updates the card's content with that passed.
+         *
+         * @private
+         * @method _updateCardContent
+         * @param  {Model} card The card to update.
+         * @param  {HTML | String} content The content you are updated the card with
+         */
+        _updateCardContent: function (card, content) {
+            var cookbook = this.get('model'),
+                cards = cookbook.get('cards'),
+                cardId = card.get('id'),
+                wallets = cookbook.get('wallets'),
+                index = cards.indexOf(card),
+                now = new Date(),
+                newWalletCards,
+                newWalletId,
+                currentWallet,
+                newWallet;
+
+            cards.remove(card, {
+                silent: true
+            });
+
+            if (content) {
+                currentWallet = wallets.getById(card.get('wallet'));
+
+                // If wallet card belongs to changes, we need to update the card and wallet data.
+                if (this._getSimpleDate(currentWallet.get('date')) !== this._getSimpleDate(now)) {
+                    newWallet = wallets.getWalletBySimpleDate(now);
+
+                    if (!newWallet) {
+                        newWalletId = 'wallet-' + Y.guid();
+
+                        newWallet = new Wallet({
+                            date: now,
+                            id: newWalletId,
+                            cards: [cardId]
+                        });
+
+                        wallets.add(newWallet);
+
+                        Controller.addWallet({
+                            wallet: newWallet
+                        });
+                    } else {
+                        newWalletId = newWallet.get('id');
+                        newWallet.get('cards').push(cardId);
+
+                        Controller.updateWallet({
+                            wallet: newWallet
+                        });
+                    }
+
+                    card.set('wallet', newWalletId);
+
+                    currentWalletCards = currentWallet.get('cards');
+                    currentWalletCards.splice(currentWalletCards.indexOf(cardId), 1);
+
+                    if (currentWalletCards.length) {
+                        currentWallet.set('cards', currentWalletCards);
+                        Controller.updateWallet({
+                            wallet: currentWallet
+                        });
+                    }  else {
+                        Controller.deleteWallet({
+                            wallet: currentWallet
+                        });
+                        currentWallet.destroy();
+                    }
+                }
+
+                card.set('content', content);
+                card.set('dateLastEdited', now);
+
+                cards.add(card, {
+                    index: index
+                });
+
+                Controller.updateCard({
+                    card: card
+                });
+            } else {
+                Controller.deleteCard({
+                    card: card
+                });
+                card.destroy();
+                this.render();
             }
         },
 
@@ -216,34 +338,59 @@ YUI.add('cb-card-list-view', function (Y) {
          * Creates and saves the new card to the model list.
          *
          * @private
-         * @method _createAndSaveCard
+         * @method _createAndSaveNewCard
          * @param  {String} cardContent The content to save to the card model
          */
-        _createAndSaveCard: function (cardContent) {
-            var modelList = this.get('modelList'),
-                now       = Date.now();
+        _createAndSaveNewCard: function (cardContent) {
+            var cookbook = this.get('model'),
+                cards    = cookbook.get('cards'),
+                wallets  = cookbook.get('wallets'),
+                now      = new Date(),
+                wallet   = wallets.getWalletBySimpleDate(now),
+                cardId   = 'card-' + Y.guid(),
+                card,
+                walletId;
 
-            modelList.add(new Card({
-                id: Y.guid(),
+            if (!wallet) {
+                walletId = 'wallet-' + Y.guid();
+
+                wallet = new Wallet({
+                    date: now,
+                    id: walletId,
+                    cards: [cardId]
+                });
+
+                wallets.add(wallet);
+
+                Controller.addWallet({
+                    wallet: wallet
+                });
+            } else {
+                walletId = wallet.get('id');
+            }
+
+            card = new Card({
+                id: cardId,
                 content: cardContent,
                 dateLastEdited: now,
-                dateCreated: now
-            }), {
-                // Re-render is done as a part of sorting the model list.
-                silent: true
+                dateCreated: now,
+                wallet: walletId
+            });
+
+            cards.add(card);
+
+            Controller.addCard({
+                card: card,
+                successHandler: this._addCardSuccessHandler
             });
         },
 
-        /**
-         * Ensures the last edited card is at the top of the list when rendered.
-         *
-         * @private
-         * @method _sortCardList
-         */
-        _sortCardList: function () {
-            this.get('modelList').sort({
-                decending: true
-            });
+        _getSimpleDate: function (date) {
+            var day = date.getDate(),
+                month = date.getMonth() + 1,
+                year = date.getFullYear();
+
+            return day + '/' + month + '/' + year;
         },
 
         // ================================================================================
@@ -260,7 +407,7 @@ YUI.add('cb-card-list-view', function (Y) {
         _switchNewNoteCardToEditMode: function (event) {
             if (event.keyCode === KEY_CODES.n && event.shiftKey) {
                 event.preventDefault();
-                this._switchToEditMode(Y.one('.' + CLASS_NAMES.newCard));
+                this._switchToEditMode(Y.one('.' + CLASS_NAMES.cardNew));
             }
         },
 
@@ -369,10 +516,27 @@ YUI.add('cb-card-list-view', function (Y) {
                     });
                 }
             }
+        },
+
+        // ================================================================================
+        // =============================== SUCCESS HANDLERS ===============================
+        // ================================================================================
+
+        _addCardSuccessHandler: function (config) {
+            var card = config.card,
+                _id = JSON.parse(config.response.responseText)._id;
+
+            card.set('_id', _id);
+        },
+
+        _addWalletSuccessHandler: function (config) {
+            var wallet = config.wallet,
+                _id = JSON.parse(config.response.responseText)._id;
+
+            wallet.set('_id', _id);
         }
 
     }, {
-
         ATTRS: {
             /**
              * The card node of the card being edited.
@@ -394,17 +558,14 @@ YUI.add('cb-card-list-view', function (Y) {
                 value: null
             }
         }
-
     });
 
 }, '1.0.0', {
     requires: [
         'base',
         'event-outside',
-        'node-event-simulate',
-        'view',
-        'yui-later',
-        'template',
-        'cb-card-list'
+        'handlebars',
+        'json-parse',
+        'view'
     ]
 });

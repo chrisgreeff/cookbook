@@ -10,9 +10,9 @@
     padding-right: $page-header-file-icon-padding-right;
     position: relative;
     top: 2px;
-}
 
-.cb-heading-icon-file:before {
-    content: "\e600";
-    @extend .cb-icomoon-font;
+    &:before {
+        content: "\e600";
+        @extend .cb-icomoon-font;
+    }
 }
