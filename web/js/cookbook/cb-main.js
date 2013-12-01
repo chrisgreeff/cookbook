@@ -1,12 +1,14 @@
 YUI().use(
     'io-base',
     'json-parse',
+    'cb-cookbook-controller',
     'cb-cookbook',
     'cb-cookbook-view',
 function (Y) {
     'use strict';
 
-    var getCookbookSuccessHandler;
+    var Controller = Y.CB.Controller,
+        getCookbookSuccessHandler;
 
     getCookbookSuccessHandler = function (tx, response) {
         var cookbookJson = Y.JSON.parse(response.responseText),
@@ -18,17 +20,8 @@ function (Y) {
         }).render();
     };
 
-    Y.io('/cookbook', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        on: {
-            success: getCookbookSuccessHandler,
-
-            failure: function (tx, response) {
-                alert('Crap! Something went wrong in retrieving the data! :(');
-            }
-        }
+    Controller.getCookbook({
+        successHandler: getCookbookSuccessHandler
     });
+
 });

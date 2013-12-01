@@ -3,7 +3,9 @@ YUI.add('cb-cookbook-view', function (Y) {
     'use strict';
 
     var Handlebars = Y.Handlebars,
+        JSON = Y.JSON,
         CB = Y.CB,
+        Controller = CB.Controller,
         Card = CB.Card,
         Wallet = CB.Wallet,
 
@@ -18,8 +20,23 @@ YUI.add('cb-cookbook-view', function (Y) {
             cardContainer: 'cb-card-container',
             cardList: 'cb-card-list',
             cardNew: 'cb-card-new',
+            cardTodoCheckbox: 'cb-card-todo--checkbox',
+            cardNote: 'cb-card-note',
+            cardTodo: 'cb-card-todo',
+            iconUnchecked: 'cb-card-todo--icon-checkbox-unchecked',
+            iconChecked: 'cb-card-todo--icon-checkbox-checked',
             wallet: 'cb-wallet',
             walletList: 'cb-wallet-list'
+        },
+
+        KEY_CODES = {
+            backspace: 8,
+            enter: 13,
+            escape: 27,
+            space: 32,
+            n: 78,
+            equals: 187,
+            dash: 189
         };
 
     _renderWalletList = Handlebars.compile(
@@ -105,9 +122,9 @@ YUI.add('cb-cookbook-view', function (Y) {
         _attachViewModeEventHandlers: function () {
             var container = this.get('container');
 
-            // container.delegate('mousedown', this._toggleCheckbox, '.' + CLASS_NAMES.cardTodoCheckbox, this);
+            container.delegate('mousedown', this._toggleCheckbox, '.' + CLASS_NAMES.cardTodoCheckbox, this);
             container.delegate('click', this._getCardForEditMode, '.' + CLASS_NAMES.card, this);
-            // Y.one(window).on('keydown', this._switchNewNoteCardToEditMode, this);
+            Y.one(window).on('keydown', this._switchNewNoteCardToEditMode, this);
         },
 
         /**
@@ -118,7 +135,7 @@ YUI.add('cb-cookbook-view', function (Y) {
          */
         _detachViewModeEventHandlers: function () {
             this.get('container').detach('click');
-            // Y.one(window).detach('keydown', this._switchNewNoteCardToEditMode);
+            Y.one(window).detach('keydown', this._switchNewNoteCardToEditMode);
         },
 
         /**
@@ -131,8 +148,8 @@ YUI.add('cb-cookbook-view', function (Y) {
             var activeCardNode = this.get('activeCardNode');
 
             activeCardNode.after('clickoutside', this._switchToViewMode, this);
-            // activeCardNode.after('keydown', this._keydownStrokeListener, this);
-            // activeCardNode.after('paste', this._pasteAsPlainText, this);
+            activeCardNode.after('keydown', this._keydownStrokeListener, this);
+            activeCardNode.after('paste', this._pasteAsPlainText, this);
         },
 
         /**
@@ -145,8 +162,8 @@ YUI.add('cb-cookbook-view', function (Y) {
             var activeCardNode = this.get('activeCardNode');
 
             activeCardNode.detach('clickoutside');
-            // activeCardNode.detach('keydown', this._keydownStrokeListener);
-            // activeCardNode.detach('paste');
+            activeCardNode.detach('keydown', this._keydownStrokeListener);
+            activeCardNode.detach('paste');
         },
 
         /**
@@ -169,6 +186,7 @@ YUI.add('cb-cookbook-view', function (Y) {
 
             // Enhance the card node for editing
             cardNode.addClass(CLASS_NAMES.cardEditing);
+            cardNode.removeClass(CLASS_NAMES.cardNew);
             $(cardNode.getDOMNode()).wysiwyg();
             cardNode.focus();
         },
@@ -253,7 +271,7 @@ YUI.add('cb-cookbook-view', function (Y) {
                 currentWallet = wallets.getById(card.get('wallet'));
 
                 // If wallet card belongs to changes, we need to update the card and wallet data.
-                if (this._getSimpleDate(currentWallet.get('date')) !== this._getSimpleDate(card.get('dateLastEdited'))) {
+                if (this._getSimpleDate(currentWallet.get('date')) !== this._getSimpleDate(now)) {
                     newWallet = wallets.getWalletBySimpleDate(now);
 
                     if (!newWallet) {
@@ -266,25 +284,53 @@ YUI.add('cb-cookbook-view', function (Y) {
                         });
 
                         wallets.add(newWallet);
+
+                        Controller.addWallet({
+                            wallet: newWallet
+                        });
                     } else {
                         newWalletId = newWallet.get('id');
                         newWallet.get('cards').push(cardId);
+
+                        Controller.updateWallet({
+                            wallet: newWallet
+                        });
                     }
 
-                    // TODO: remove cardId from currentWallet's cards array
-                    newWalletCards = newWallet.get('cards');
-                    newWalletCards.splice(newWalletCards.indexOf(cardId), 1);
-
-                    newWallet.set('cards', newWalletCards);
                     card.set('wallet', newWalletId);
+
+                    currentWalletCards = currentWallet.get('cards');
+                    currentWalletCards.splice(currentWalletCards.indexOf(cardId), 1);
+
+                    if (currentWalletCards.length) {
+                        currentWallet.set('cards', currentWalletCards);
+                        Controller.updateWallet({
+                            wallet: currentWallet
+                        });
+                    }  else {
+                        Controller.deleteWallet({
+                            wallet: currentWallet
+                        });
+                        currentWallet.destroy();
+                    }
                 }
 
                 card.set('content', content);
-                card.set('dateLastEdited', new Date());
+                card.set('dateLastEdited', now);
 
                 cards.add(card, {
                     index: index
                 });
+
+                Controller.updateCard({
+                    card: card
+                });
+            } else {
+                Controller.deleteCard({
+                    card: card
+                });
+                card.destroy();
+                this.render();
             }
         },
 
@@ -302,6 +348,7 @@ YUI.add('cb-cookbook-view', function (Y) {
                 now      = new Date(),
                 wallet   = wallets.getWalletBySimpleDate(now),
                 cardId   = 'card-' + Y.guid(),
+                card,
                 walletId;
 
             if (!wallet) {
@@ -314,17 +361,28 @@ YUI.add('cb-cookbook-view', function (Y) {
                 });
 
                 wallets.add(wallet);
+
+                Controller.addWallet({
+                    wallet: wallet
+                });
             } else {
                 walletId = wallet.get('id');
             }
 
-            cards.add(new Card({
+            card = new Card({
                 id: cardId,
                 content: cardContent,
                 dateLastEdited: now,
                 dateCreated: now,
                 wallet: walletId
-            }));
+            });
+
+            cards.add(card);
+
+            Controller.addCard({
+                card: card,
+                successHandler: this._addCardSuccessHandler
+            });
         },
 
         _getSimpleDate: function (date) {
@@ -349,7 +407,7 @@ YUI.add('cb-cookbook-view', function (Y) {
         _switchNewNoteCardToEditMode: function (event) {
             if (event.keyCode === KEY_CODES.n && event.shiftKey) {
                 event.preventDefault();
-                this._switchToEditMode(Y.one('.' + CLASS_NAMES.newCard));
+                this._switchToEditMode(Y.one('.' + CLASS_NAMES.cardNew));
             }
         },
 
@@ -370,6 +428,112 @@ YUI.add('cb-cookbook-view', function (Y) {
             }
 
             this._switchToEditMode(cardNode);
+        },
+
+        /**
+         * Toggles the state of the checkbox
+         *
+         * @eventHandler
+         * @method _toggleCheckbox
+         * @param  {Event} click event
+         */
+        _toggleCheckbox: function (event) {
+            var checkboxNode = event.target;
+
+            checkboxNode.toggleClass(CLASS_NAMES.iconUnchecked);
+            checkboxNode.toggleClass(CLASS_NAMES.iconChecked);
+
+            // This is to prevent the checkbox from toggling twice, as the event bubbles from the card container,
+            // and fires twice.
+            event.stopImmediatePropagation();
+        },
+
+        /**
+         * Pastes any clipboard selection as plain text to avoid any unintended weirdness in formatting.
+         *
+         * @eventHandler
+         * @method _pasteAsPlainText
+         * @param  {Event} paste event
+         */
+        _pasteAsPlainText: function (event) {
+            event.preventDefault();
+            document.execCommand('insertHTML', false, event._event.clipboardData.getData('text/plain'));
+        },
+
+        /**
+         * Manages the keydown strokes during the editing of a card.
+         *
+         * @eventHandler
+         * @method _keydownStrokeListener
+         * @param  {Event} keydown event
+         */
+        _keydownStrokeListener: function (event) {
+            var keyCode = event.keyCode,
+                textCursorPosition = window.getSelection().extentOffset,
+                firstChar = this.get('firstChar'),
+                oldContent,
+                cardId;
+
+            // Escape cancels the edit.
+            if (keyCode === KEY_CODES.escape) {
+                activeCardNode = this.get('activeCardNode');
+                cardId         = activeCardNode.getData('id');
+
+                if (cardId) {
+                    oldContent = this.get('modelList').getById(cardId).get('content');
+                } else {
+                    oldContent = '';
+                }
+
+                activeCardNode.setHTML(oldContent);
+                this._switchToViewMode();
+            }
+
+            // Shift + Enter saves the note if there are changes.
+            if (keyCode === KEY_CODES.enter && event.shiftKey) {
+                event.preventDefault();
+                this._switchToViewMode();
+            }
+
+            // Store the first char for todo and note insertion.
+            if (textCursorPosition === 0) {
+                this.set('firstChar', keyCode);
+            }
+
+            // Enhance the character into todo or note list items.
+            if (keyCode === KEY_CODES.space && textCursorPosition === 1) {
+                if (firstChar === KEY_CODES.dash) {
+                    event.preventDefault();
+                    document.execCommand('delete');
+                    document.execCommand('insertHTML', false, _renderNoteListItem());
+
+                } else if (firstChar === KEY_CODES.equals) {
+                    event.preventDefault();
+                    document.execCommand('delete');
+                    document.execCommand('insertHTML', false, _renderTodoListItem());
+                    Y.later(0, this, function () {
+                        document.execCommand('delete');
+                    });
+                }
+            }
+        },
+
+        // ================================================================================
+        // =============================== SUCCESS HANDLERS ===============================
+        // ================================================================================
+
+        _addCardSuccessHandler: function (config) {
+            var card = config.card,
+                _id = JSON.parse(config.response.responseText)._id;
+
+            card.set('_id', _id);
+        },
+
+        _addWalletSuccessHandler: function (config) {
+            var wallet = config.wallet,
+                _id = JSON.parse(config.response.responseText)._id;
+
+            wallet.set('_id', _id);
         }
 
     }, {
@@ -401,6 +565,7 @@ YUI.add('cb-cookbook-view', function (Y) {
         'base',
         'event-outside',
         'handlebars',
+        'json-parse',
         'view'
     ]
 });
