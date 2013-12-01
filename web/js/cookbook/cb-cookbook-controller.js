@@ -18,13 +18,21 @@ YUI.add('cb-cookbook-controller', function (Y) {
     };
 
     DEFAULT_ERROR_HANDLER = function (tx, response) {
-        alert('Crap! Something went wrong in retrieving the data! :(');
+        alert('Crap! Something went wrong :( Give Mr G a call!');
         console.log(tx);
         console.log(response);
     };
 
     Y.namespace('CB').Controller = {
 
+        /**
+         * Retrieves all wallets and cards in the cookbook instance.
+         *
+         * @method getCookbook
+         * @param  {Object} config
+         *         @param {Function} successHandler The success handler for the transaction.
+         *         @param {Function} errorHandler The error handler for the transaction.
+         */
         getCookbook: function (config) {
             Y.io('/cookbook', {
                 method: 'GET',
@@ -36,6 +44,15 @@ YUI.add('cb-cookbook-controller', function (Y) {
             });
         },
 
+        /**
+         * Persists the passed wallet.
+         *
+         * @method addWallet
+         * @param  {Object} config
+         *         @param {Object} wallet The wallet object to persist.
+         *         @param {Function} successHandler The success handler for the transaction.
+         *         @param {Function} errorHandler The error handler for the transaction.
+         */
         addWallet: function (config) {
             var wallet = config.wallet;
 
@@ -55,6 +72,15 @@ YUI.add('cb-cookbook-controller', function (Y) {
             });
         },
 
+        /**
+         * Updates the passed wallet.
+         *
+         * @method updateWallet
+         * @param  {Object} config
+         *         @param {Object} wallet The wallet object to update.
+         *         @param {Function} successHandler The success handler for the transaction.
+         *         @param {Function} errorHandler The error handler for the transaction.
+         */
         updateWallet: function (config) {
             var wallet = config.wallet;
 
@@ -69,6 +95,15 @@ YUI.add('cb-cookbook-controller', function (Y) {
             });
         },
 
+        /**
+         * Deletes the passed wallet.
+         *
+         * @method deleteWallet
+         * @param  {Object} config
+         *         @param {Object} wallet The wallet object to delete.
+         *         @param {Function} successHandler The success handler for the transaction.
+         *         @param {Function} errorHandler The error handler for the transaction.
+         */
         deleteWallet: function (config) {
             var wallet = config.wallet;
 
@@ -82,6 +117,15 @@ YUI.add('cb-cookbook-controller', function (Y) {
             });
         },
 
+        /**
+         * Persists the passed card.
+         *
+         * @method addCard
+         * @param  {Object} config
+         *         @param {Object} card The card object to persist.
+         *         @param {Function} successHandler The success handler for the transaction.
+         *         @param {Function} errorHandler The error handler for the transaction.
+         */
         addCard: function (config) {
             var card = config.card;
 
@@ -101,6 +145,15 @@ YUI.add('cb-cookbook-controller', function (Y) {
             });
         },
 
+        /**
+         * Updates the passed card.
+         *
+         * @method updateCard
+         * @param  {Object} config
+         *         @param {Object} card The card object to update.
+         *         @param {Function} successHandler The success handler for the transaction.
+         *         @param {Function} errorHandler The error handler for the transaction.
+         */
         updateCard: function (config) {
             var card = config.card;
 
@@ -115,6 +168,15 @@ YUI.add('cb-cookbook-controller', function (Y) {
             });
         },
 
+        /**
+         * Deletes the passed card.
+         *
+         * @method addCard
+         * @param  {Object} config
+         *         @param {Object} card The card object to delete.
+         *         @param {Function} successHandler The success handler for the transaction.
+         *         @param {Function} errorHandler The error handler for the transaction.
+         */
         deleteCard: function (config) {
             var card = config.card;
 

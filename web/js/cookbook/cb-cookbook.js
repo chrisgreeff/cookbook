@@ -54,6 +54,12 @@ YUI.add('cb-cookbook', function (Y) {
                 }
             },
 
+            /**
+             * The cards that belong to the cookbook
+             *
+             * @attribute cards
+             * @type {CardList}
+             */
             cards: {
                 setter: function (value) {
                     var cards,

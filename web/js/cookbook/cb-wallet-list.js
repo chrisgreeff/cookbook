@@ -5,6 +5,13 @@ YUI.add('cb-wallet-list', function (Y) {
     Y.namespace('CB').WalletList = Y.Base.create('cb-wallet-list', Y.ModelList, [], {
         model: Y.CB.Wallet,
 
+        /**
+         * Returns the wallet with the specified date.
+         *
+         * @method getWalletByDate
+         * @param  {Date | String} date The date to get the wallet by.
+         * @return {Wallet} The wallet that matches the date.
+         */
         getWalletByDate: function (date) {
             var dateValue = (typeof date === 'string') ? date : date.toString(),
                 result    = null;
@@ -19,6 +26,13 @@ YUI.add('cb-wallet-list', function (Y) {
             return result;
         },
 
+        /**
+         * Returns the wallet with the specified date.
+         *
+         * @method getWalletBySimpleDate
+         * @param  {Date | String} date The date to get the wallet by.
+         * @return {Wallet} The wallet that matches the date.
+         */
         getWalletBySimpleDate: function (date) {
             var simpleDate = this._getSimpleDate(date),
                 result;

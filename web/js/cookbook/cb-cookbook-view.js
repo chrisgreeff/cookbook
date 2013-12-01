@@ -359,6 +359,11 @@ YUI.add('cb-cookbook-view', function (Y) {
                 });
             } else {
                 walletId = wallet.get('id');
+                wallet.get('cards').push(cardId);
+
+                Controller.updateWallet({
+                    wallet: wallet
+                });
             }
 
             card = new Card({
@@ -514,6 +519,14 @@ YUI.add('cb-cookbook-view', function (Y) {
         // =============================== SUCCESS HANDLERS ===============================
         // ================================================================================
 
+        /**
+         * Updates the _id of the passed model, so the client tracks the servers id.
+         *
+         * @method _addModelSuccessHandler
+         * @param {Object} config
+         *        @param {Object} model The model to update.
+         *        @param {Object} response The response of the add transaction.
+         */
         _addModelSuccessHandler: function (config) {
             var model = config.model,
                 _id   = JSON.parse(config.response.responseText)._id;
@@ -551,6 +564,9 @@ YUI.add('cb-cookbook-view', function (Y) {
         'event-outside',
         'handlebars',
         'json-parse',
-        'view'
+        'view',
+        'cb-cookbook-controller',
+        'cb-card',
+        'cb-wallet'
     ]
 });
