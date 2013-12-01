@@ -1,11 +1,11 @@
-cookbook
+Cookbook
 ========
 
 This is just a place for me to hack together a little recipe web app.
 
-h2. Commands
+## Commands
 
-h3. Installation Commands
+### Installation Commands
 
 These commands install any dependencies you need to run cookbook locally.
 
@@ -19,7 +19,7 @@ $ make install
 $ make install-mongo
 ```
 
-h3. Server Commands
+### Server Commands
 
 Be sure to run these commands in separate terminals.
 
