@@ -18,22 +18,25 @@
             <h2 class="cb-main-header"><span class="cb-heading-icon-file"></span>Cookbook</h2>
         </header>
         <div id="main">
-            <div class="cb-card-list-container">
-                <ul class="cb-card-list"></ul>
-            </div>
+            <div class="cb-wallet-list-container"></div>
             <div class="cb-blur-filter"></div>
             <div class="cb-shorcut-popup-container">
-                    <div class="cb-shortcut-popup-content">-- SHORTCUT --
-                    </div>
-                </div>
+                <div class="cb-shortcut-popup-content">-- SHORTCUT --</div>
+            </div>
         </div>
+
         <!--
             This is not the most ideal loading of modules. Should look into YUI module loader. Or even requirejs
         -->
-        <script src="js/cookbook/cb-card-list-view.js"></script>
         <script src="js/cookbook/cb-card-list.js"></script>
         <script src="js/cookbook/cb-card.js"></script>
+
+        <script src="js/cookbook/cb-wallet-list.js"></script>
+        <script src="js/cookbook/cb-wallet.js"></script>
+
         <script src="js/cookbook/cb-cookbook.js"></script>
-        <script src="js/cookbook/cb-main.js"></script>
+        <script src="js/cookbook/cb-cookbook-view.js"></script>
+        <script src="js/cookbook/cb-cookbook-controller.js"></script>
+        <script src="js/cookbook/cb-cookbook-main.js"></script>
     </body>
 </html>

@@ -6,28 +6,22 @@ YUI.add('cb-card-list', function (Y) {
         model: Y.CB.Card,
 
         /**
-         * Updates the card's content with that passed.
+         * Returns all the cards that belong to a specified wallet.
          *
-         * @method updateCardContent
-         * @param  {Model} card The card to update.
-         * @param  {HTML | String} content The content you are updated the card with
+         * @method getByWalletId
+         * @param  {String} walletId The id of the specified wallet.
+         * @return {Array} The list of cards that belong to the specified wallet.
          */
-        updateCardContent: function (card, content) {
-            var index = this.indexOf(card);
+        getByWalletId: function (walletId) {
+            var cards = [];
 
-            this.remove(card, {
-                silent: true
+            this.each(function (card) {
+                if (card.get('wallet') === walletId) {
+                    cards.push(card.toJSON());
+                }
             });
 
-            if (content) {
-                card.set('content', content);
-                card.set('dateLastEdited', Date.now());
-
-                this.add(card, {
-                    index: index,
-                    silent: true
-                });
-            }
+            return cards;
         },
 
         // Sorting by dateLastEdited when modelList.sort() is called.
