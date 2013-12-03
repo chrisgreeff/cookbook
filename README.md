@@ -9,26 +9,35 @@ This is just a place for me to hack together a little recipe web app.
 
 These commands install any dependencies you need to run cookbook locally.
 
-- Install everything
+- Install Everything (Mongodb and NPM dependencies)
 ```bash
 $ make install
 ```
 
-- Install mongodb
+All you really need is the one above. But the seperate install commands are:
+
+- Install Mongodb
 ```bash
 $ make install-mongo
 ```
 
+- Install NPM Dependencies
+```bash
+$ npm install
+```
+
 ### Server Commands
 
-Be sure to run these commands in separate terminals.
+Be sure to run these commands (IN ORDER) in separate terminals to start the application.
 
-- Start web server
+1. Start Database Server
 ```bash
-$ node server.js
+$ make db
 ```
 
-- Start database server
+2. Start Web Server
 ```bash
-$ make start-db
+$ make cb
 ```
+
+Once both of these are running, open this page: http://localhost:3000/cookbook.html
