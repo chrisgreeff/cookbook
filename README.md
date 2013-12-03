@@ -10,6 +10,7 @@ This is just a place for me to hack together a little recipe web app.
 These commands install any dependencies you need to run cookbook locally.
 
 - Install Everything (Mongodb and NPM dependencies)
+
 ```bash
 $ make install
 ```
