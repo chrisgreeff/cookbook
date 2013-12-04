@@ -1,0 +1,19 @@
+@import "compass/css3/box-shadow";
+
+.yui3-aclist-content {
+    background: #FFF;
+    border: 1px solid #AFAFAF;
+    @include box-shadow(1px 1px 4px rgba(0,0,0,0.58));
+}
+
+.yui3-aclist-item {
+    color: black;
+}
+
+.yui3-aclist-item-hover {
+    background-color: blue;
+}
+
+.yui3-aclist-item-active {
+    background-color: red;
+}

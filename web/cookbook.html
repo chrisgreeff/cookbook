@@ -7,16 +7,14 @@
         <!-- Imports -->
         <link href="css/style.css" rel="stylesheet" type="text/css" media="all">
         <link href='http://fonts.googleapis.com/css?family=Roboto:400,300,500,700' rel='stylesheet' type='text/css'>
-        <script src="js/vendors/jquery-1.10.2.min.js"></script>
-        <script src="js/vendors/bootstrap.min.js"></script>
-        <script src="js/vendors/jquery.hotkeys.js"></script>
-        <script src="js/vendors/bootstrap-wysiwyg.js"></script>
+        <script src="js/vendor/jquery-1.10.2.min.js"></script>
+        <script src="js/vendor/bootstrap.min.js"></script>
+        <script src="js/vendor/jquery.hotkeys.js"></script>
+        <script src="js/vendor/bootstrap-wysiwyg.js"></script>
         <script src="http://yui.yahooapis.com/3.13.0/build/yui/yui-min.js"></script>
     </head>
     <body>
-        <header id="header">
-            <h2 class="cb-main-header"><span class="cb-heading-icon-file"></span>Cookbook</h2>
-        </header>
+        <header id="header"></header>
         <div id="main">
             <div class="cb-shortcut-banner">
                 <div class="cb-shortcut-logo"></div>
@@ -46,6 +44,8 @@
         <!--
             This is not the most ideal loading of modules. Should look into YUI module loader. Or even requirejs
         -->
+        <script src="js/cookbook/cb-header-view.js"></script>
+
         <script src="js/cookbook/cb-card-list.js"></script>
         <script src="js/cookbook/cb-card.js"></script>
 
