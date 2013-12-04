@@ -1,42 +1,29 @@
-.cb-shortcut-banner {
-    line-height: 30px;
-    width: 49px;
-    height: 30px;
-    padding-left: $shortcut-padding-left;
-    color: $shortcut-text-color;
-    font-size: $shortcut-font-size;
-    background-color: $shortcut-background-color;
-    overflow: hidden;
-    transition-duration: 0.5s;
-    &:hover {
-        width: 100%;
-        box-shadow: $shortcut-box-shadow;
-        overflow: hidden;
-    }
-}
-
-.cb-shortcut {
-    margin: 0px 6px;
-    display: inline;
-    vertical-align: middle;
-}
-
-.cb-shortcut-button {
-    border-style: solid;
-    border-width: 1px;
-    padding: 2px;
-    margin-right: 5px;
+.cb-shorcut-popup-container {
+    height: 400px;
+    width: 400px;
+    background: #272822;
+    top: 50%;
+    left: 50%;
+    position: fixed;
+    margin-left: -200px;
+    margin-top: -200px;
     border-radius: 5px;
-    vertical-align: middle;
-    color: $shortcut-button-text-color;
+    box-shadow: $shortcut-box-shadow;
+    z-index: 1000;
+    opacity: 0.8;
+    padding: 20px;
 }
 
-.cb-shortcut-logo {
-    font-family: 'icomoon';
-    &:before {content:"\e601";}
-    font-size: 1.5em;
-    display: inline;
-    vertical-align: middle;
-    padding-left: 12px;
+.cb-shortcut-popup-content {
+    color: #FFF;
+    text-align: center;
+}
 
+.cb-blur-filter {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: #FFF;
+    top: 0px;
+    opacity: 0.4;
 }
