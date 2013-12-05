@@ -18,7 +18,9 @@
             <h1 class="cb-main-header">
                 <a href="/cookbook.html" class="app-title">cookbook</a>
             </h1>
-            <div id='cb-shortcut-logo'></div>
+            <a href="#">
+                <div id="cb-shortcut-logo"></div>
+            </a>
         </header>
         <div id="main">
                 <div id="cb-shortcut-banner">
@@ -47,17 +49,34 @@
         <script src="js/cookbook/cb-cookbook-controller.js"></script>
         <script src="js/cookbook/cb-cookbook-main.js"></script>
         <script>
-            var button = document.getElementById('cb-shortcut-logo');
 
-button.onclick = function() {
-    var div = document.getElementById('cb-shortcut-banner');
-    if (div.style.display !== 'none') {
-        div.style.display = 'none';
-    }
-    else {
-        div.style.display = 'block';
-    }
-};
+            $(document).ready(function(){
+    // build a variable to target the #menu div
+    var shortcut = $('#cb-shortcut-banner')
+    // bind a click function to the menu-trigger
+    $('#cb-shortcut-logo').click(function(event){
+        event.preventDefault();
+        event.stopPropagation();
+        // if the menu is visible slide it up
+        if (shortcut.is(":visible"))
+        {
+            shortcut.slideUp(400);
+        }
+        // otherwise, slide the menu down
+        else
+        {
+            shortcut.slideDown(400);
+        }
+    });     
+    
+    $(document).not('#cb-shortcut-banner, #cb-shortcut-logo').click(function(event) {
+        event.preventDefault();
+        if (shortcut.is(":visible"))
+        {
+            shortcut.slideUp(400);
+        }
+    });
+    })
         </script>
     </body>
 </html>
