@@ -65,6 +65,9 @@ exports.Utilities = {
             id       = request.params.id,
             body     = request.body;
 
+        // We cannot modify _id, so deleting it from the update object.
+        delete body._id;
+
         console.log('Updating ' + name + ': ' + id);
         console.log('With: ' + JSON.stringify(body));
 

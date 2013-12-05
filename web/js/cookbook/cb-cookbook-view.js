@@ -251,7 +251,7 @@ YUI.add('cb-cookbook-view', function (Y) {
                 if (activeCardNodeText) {
                     this._createAndSaveNewCard(activeCardNodeContent);
                 } else {
-                    // @todo destroy wysiwyg node, and re-create new card node.
+                    this.render();
                 }
             // Existing card.
             } else if (cardId) {
