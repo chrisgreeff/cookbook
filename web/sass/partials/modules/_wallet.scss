@@ -7,4 +7,32 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
+    border-left-style: solid;
+    border-left-width: 2px;
+    border-left-color: #E82569;
+}
+
+.cb-wallet-date {
+    position: relative;
+    left: -40px;
+    padding: 0px 10px;
+    background-color: #E82569;
+    width: 65px;
+    height: 30px;
+    color: #FFF;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.cb-wallet-date-day {
+    display: inline-block;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.cb-wallet-date-month {
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
