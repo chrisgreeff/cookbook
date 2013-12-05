@@ -1,7 +1,5 @@
 .cb-main-header {
-    padding-left: $page-header-padding-left;
-    padding-top: $page-header-padding-top;
-    text-transform: uppercase;
+    display: inline-block;
 }
 
 .cb-heading-icon-file {
@@ -12,7 +10,14 @@
     top: 2px;
 
     &:before {
-        content: "\e600";
+        content: "\e605";
         @extend .cb-icomoon-font;
     }
+}
+
+.app-title {
+    display: inline-block;
+    color: $page-header-file-icon-text-color;
+    margin: 15px 0px;
+    font-weight: 300;
 }

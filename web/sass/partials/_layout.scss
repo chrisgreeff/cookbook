@@ -1,8 +1,12 @@
 #header {
-    background-color: $page-header-background-color;
+    background-color: $card-background-color;
     color: $page-header-text-color;
     height: $page-header-height;
-    width: 100%;
+    box-shadow: 0px 5px 5px #bebebe;
+    border-bottom-style: solid;
+    border-bottom-color: #bebebe;
+    border-bottom-width: 1px;
+    padding: 5px 40px;
 }
 
 #main {

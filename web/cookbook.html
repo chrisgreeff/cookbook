@@ -15,32 +15,22 @@
     </head>
     <body>
         <header id="header">
-            <h2 class="cb-main-header"><span class="cb-heading-icon-file"></span>Cookbook</h2>
+            <h1 class="cb-main-header">
+                <a href="/cookbook.html" class="app-title">cookbook</a>
+            </h1>
+            <div id='cb-shortcut-logo'></div>
         </header>
         <div id="main">
-            <div class="cb-shortcut-banner">
-                <div class="cb-shortcut-logo"></div>
-                <div class="cb-shortcut">
-                    <span class="cb-shortcut-button">Shift + N</span>
-                    <span class="cb-shortcut-exp">= New card</span>
+                <div id="cb-shortcut-banner">
+                    <table>
+                        <tr class="cb-shortcut-table">
+                            <td><span class="cb-button">Shift + N </span>Create new card</td>
+                            <td><span class="cb-button">Shift + ⏎ </span>Save card</td>
+                            <td><span class="cb-button">= ␣</span>Create list</td>
+                            <td><span class="cb-button">- ␣</span>Create bullet</td>
+                        </tr>
+                    </table>
                 </div>
-                <div class="cb-shortcut">
-                    <span class="cb-shortcut-button">Shift + Enter</span>
-                    <span class="cb-shortcut-exp">= Finish Edit</span>
-                </div>
-                <div class="cb-shortcut">
-                    <span class="cb-shortcut-button">"=" and space</span>
-                    <span class="cb-shortcut-exp">= Create ToDos</span>
-                </div>
-                 <div class="cb-shortcut">
-                    <span class="cb-shortcut-button">"-" and space</span>
-                    <span class="cb-shortcut-exp">= Create Bullets</span>
-                </div>
-                <div class="cb-shortcut">
-                    <span class="cb-shortcut-button">ESC</span>
-                    <span class="cb-shortcut-exp">= Cancel</span>
-                </div>
-            </div>
             <div class="cb-wallet-list-container"></div>
         </div>
         <!--
@@ -56,5 +46,18 @@
         <script src="js/cookbook/cb-cookbook-view.js"></script>
         <script src="js/cookbook/cb-cookbook-controller.js"></script>
         <script src="js/cookbook/cb-cookbook-main.js"></script>
+        <script>
+            var button = document.getElementById('cb-shortcut-logo');
+
+button.onclick = function() {
+    var div = document.getElementById('cb-shortcut-banner');
+    if (div.style.display !== 'none') {
+        div.style.display = 'none';
+    }
+    else {
+        div.style.display = 'block';
+    }
+};
+        </script>
     </body>
 </html>

@@ -1,19 +1,17 @@
-.cb-shortcut-banner {
+#cb-shortcut-banner {
     display: none;
     line-height: 30px;
-    width: 49px;
-    height: 30px;
+    height: auto;
     padding-left: $shortcut-padding-left;
+    padding-right: $shortcut-padding-right;
     color: $shortcut-text-color;
     font-size: $shortcut-font-size;
     background-color: $shortcut-background-color;
     overflow: hidden;
     transition-duration: 0.5s;
-    &:hover {
-        width: 100%;
-        box-shadow: $shortcut-box-shadow;
-        overflow: hidden;
-    }
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #bebebe;
 }
 
 .cb-shortcut {
@@ -27,16 +25,37 @@
     border-width: 1px;
     padding: 2px;
     margin-right: 5px;
-    border-radius: 5px;
+    border-radius: 0;
     vertical-align: middle;
     color: $shortcut-button-text-color;
 }
 
-.cb-shortcut-logo {
+#cb-shortcut-logo {
     font-family: 'icomoon';
     &:before {content:"\e601";}
     font-size: 1.5em;
-    display: inline;
-    vertical-align: middle;
-    padding-left: 12px;
+    display: inline-block;
+    padding: 16px 0px;
+    float: right;
+    color: #bebebe;
+    transition-duration: 0.3s;
+    &:hover {
+        color: #F5276F;
+    }
+}
+
+.cb-shortcut-table td {
+    border-right-style: solid;
+    border-right-color: #bebebe;
+    border-right-width: 1px;
+    padding: 10px;
+    overflow: hidden;
+}
+
+.cb-button {
+    background-color: #F5276F;
+    color: #FFF;
+    padding: 5px;
+    margin-right: 5px;
+    font-weight: 500;
 }
