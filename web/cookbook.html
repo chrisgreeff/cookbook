@@ -48,35 +48,6 @@
         <script src="js/cookbook/cb-cookbook-view.js"></script>
         <script src="js/cookbook/cb-cookbook-controller.js"></script>
         <script src="js/cookbook/cb-cookbook-main.js"></script>
-        <script>
-
-            $(document).ready(function(){
-    // build a variable to target the #menu div
-    var shortcut = $('#cb-shortcut-banner')
-    // bind a click function to the menu-trigger
-    $('#cb-shortcut-logo').click(function(event){
-        event.preventDefault();
-        event.stopPropagation();
-        // if the menu is visible slide it up
-        if (shortcut.is(":visible"))
-        {
-            shortcut.slideUp(400);
-        }
-        // otherwise, slide the menu down
-        else
-        {
-            shortcut.slideDown(400);
-        }
-    });     
-    
-    $(document).not('#cb-shortcut-banner, #cb-shortcut-logo').click(function(event) {
-        event.preventDefault();
-        if (shortcut.is(":visible"))
-        {
-            shortcut.slideUp(400);
-        }
-    });
-    })
-        </script>
+        <script src="js/cookbook/cb-shortcuts.js"></script>
     </body>
 </html>
