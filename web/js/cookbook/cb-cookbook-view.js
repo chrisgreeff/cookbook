@@ -60,21 +60,23 @@ YUI.add('cb-cookbook-view', function (Y) {
         ];
 
     _renderWalletList = Handlebars.compile(
-        '<div class="' + CLASS_NAMES.cardContainer + '">' +
-            '<div class="' + CLASS_NAMES.card + ' ' + CLASS_NAMES.cardNew + '">' +
-                'New Card' +
+        '<div class="cb-wallet-list-container">' +
+            '<div class="' + CLASS_NAMES.cardContainer + '">' +
+                '<div class="' + CLASS_NAMES.card + ' ' + CLASS_NAMES.cardNew + '">' +
+                    'New Card' +
+                '</div>' +
             '</div>' +
-        '</div>' +
-        '<ul class="' + CLASS_NAMES.walletList + '">' +
-            '{{#each wallets}}' +
-                '<li class="' + CLASS_NAMES.wallet + '" data-date="{{date}}">' +
-                    '<div class="' + CLASS_NAMES.walletDate + '">' +
-                        '{{{format-date date}}}' +
-                    '</div>' +
-                    '<ul class="' + CLASS_NAMES.cardList + '"></ul>' +
-                '</li>' +
-            '{{/each}}' +
-        '</ul>'
+            '<ul class="' + CLASS_NAMES.walletList + '">' +
+                '{{#each wallets}}' +
+                    '<li class="' + CLASS_NAMES.wallet + '" data-date="{{date}}">' +
+                        '<div class="' + CLASS_NAMES.walletDate + '">' +
+                            '{{{format-date date}}}' +
+                        '</div>' +
+                        '<ul class="' + CLASS_NAMES.cardList + '"></ul>' +
+                    '</li>' +
+                '{{/each}}' +
+            '</ul>' +
+        '</div>'
     );
 
     _renderCardList = Handlebars.compile(

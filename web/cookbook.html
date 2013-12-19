@@ -14,27 +14,8 @@
         <script src="http://yui.yahooapis.com/3.13.0/build/yui/yui-min.js"></script>
     </head>
     <body>
-        <header id="header">
-            <h1 class="cb-main-header">
-                <a href="/cookbook.html" class="app-title">cookbook</a>
-            </h1>
-            <a href="#">
-                <div id="cb-shortcut-logo"></div>
-            </a>
-        </header>
-        <div id="main">
-                <div id="cb-shortcut-banner">
-                    <table>
-                        <tr class="cb-shortcut-table">
-                            <td><span class="cb-button">Shift + N </span>Create new card</td>
-                            <td><span class="cb-button">Shift + ⏎ </span>Save card</td>
-                            <td><span class="cb-button">= ␣</span>Create list</td>
-                            <td><span class="cb-button">- ␣</span>Create bullet</td>
-                        </tr>
-                    </table>
-                </div>
-            <div class="cb-wallet-list-container"></div>
-        </div>
+        <header id="header"></header>
+        <main id="main"></main>
         <!--
             This is not the most ideal loading of modules. Should look into YUI module loader. Or even requirejs
         -->
@@ -47,7 +28,9 @@
         <script src="js/cookbook/cb-cookbook.js"></script>
         <script src="js/cookbook/cb-cookbook-view.js"></script>
         <script src="js/cookbook/cb-cookbook-controller.js"></script>
+
+        <script src="js/cookbook/cb-header-view.js"></script>
+
         <script src="js/cookbook/cb-cookbook-main.js"></script>
-        <script src="js/cookbook/cb-shortcuts.js"></script>
     </body>
 </html>
