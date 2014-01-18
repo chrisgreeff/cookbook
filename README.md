@@ -18,11 +18,13 @@ $ make install
 All you really need is the one above. But the seperate install commands are:
 
 - Install Mongodb
+
 ```bash
 $ make install-mongo
 ```
 
 - Install NPM Dependencies
+
 ```bash
 $ npm install
 ```
@@ -32,11 +34,13 @@ $ npm install
 Be sure to run these commands (IN ORDER) in separate terminals to start the application.
 
 1. Start Database Server
+
 ```bash
 $ make db
 ```
 
 2. Start Web Server
+
 ```bash
 $ make cb
 ```
